@@ -1,7 +1,15 @@
 <?php
 
+use App\Http\Controllers\AssetController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\MaintenanceController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
