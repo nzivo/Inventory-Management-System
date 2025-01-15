@@ -12,6 +12,7 @@
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.5",
         "spatie/image": "^3.7",
+        "spatie/laravel-permission": "^6.10",
         "yajra/laravel-datatables-oracle": "^11.1"
     },
     "require-dev": {
