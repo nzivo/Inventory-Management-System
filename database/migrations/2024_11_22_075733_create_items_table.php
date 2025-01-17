@@ -21,17 +21,22 @@ return new class extends Migration
             $table->integer('threshold')->default(1);
             $table->integer('available_quantity')->default(1);
             $table->unsignedBigInteger('category_id');  // Foreign key to the category
-            $table->unsignedBigInteger('branch_id');    // Foreign key to the branch
+            $table->unsignedBigInteger('subcategory_id');  // Foreign key to the subcategory
+            $table->unsignedBigInteger('brand_id')->nullable();  // Foreign key to the brand
             $table->unsignedBigInteger('supplier_id')->nullable();
+            $table->unsignedBigInteger('branch_id');    // Foreign key to the branch
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
-            $table->enum('status', ['active', 'inactive', 'in_stock', 'out_of_stock'])->default('active'); // Item status
+            $table->enum('status', ['active', 'inactive'])->default('active'); // Item status
+            $table->enum('inventory_status', ['in_stock', 'out_of_stock'])->default('in_stock');
             $table->timestamps();
 
             // Foreign key constraints
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
-            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
+            $table->foreign('subcategory_id')->references('id')->on('subcategories')->onDelete('cascade');
+            $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade');
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
         });

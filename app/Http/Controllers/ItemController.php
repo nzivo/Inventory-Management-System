@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin\Brand;
+use App\Models\Admin\SubCategory;
+use App\Models\Admin\Supplier;
 use App\Models\Assets\SerialNumber;
 use App\Models\Branch;
 use App\Models\Category;
@@ -20,7 +23,7 @@ class ItemController extends Controller
     public function index(Request $request)
     {
         // Get all items with their related data (serialNumbers, category, branch, and creator)
-        $items = Item::with(['serialNumbers', 'category', 'branch', 'creator'])->get();
+        $items = Item::with(['serialNumbers', 'category', 'branch', 'creator'])->latest()->get();
 
         return view('items.index', compact('items'));
     }
@@ -46,7 +49,11 @@ class ItemController extends Controller
     {
         $categories = Category::all();
         $branches = Branch::all();
-        return view('items.create', compact('categories', 'branches'));
+        $subcategories = SubCategory::all();  // Fetch subcategories
+        $brands = Brand::all();  // Fetch brands
+        $suppliers = Supplier::all();  // Fetch suppliers
+
+        return view('items.create', compact('categories', 'branches', 'subcategories', 'brands', 'suppliers'));
     }
 
     public function store(Request $request)
@@ -54,8 +61,11 @@ class ItemController extends Controller
         // Validate the input
         $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|string|max:255',
+            'description' => 'nullable|string|max:500', // Adjust validation for description
             'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:subcategories,id', // Added validation for subcategory
+            'brand_id' => 'nullable|exists:brands,id', // Added validation for brand
+            'supplier_id' => 'nullable|exists:suppliers,id', // Added validation for supplier
             'branch_id' => 'required|exists:branches,id',
             'quantity' => 'required|integer|min:1',
             'serial_numbers' => 'required|array|min:1',
@@ -65,6 +75,7 @@ class ItemController extends Controller
 
         // Handle the image upload
         $imageUrl = null;
+        $thumbnailUrl = null;
         if ($request->hasFile('item_img')) {
             $image = $request->file('item_img');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -88,13 +99,18 @@ class ItemController extends Controller
         // Create the item
         $item = Item::create([
             'name' => $request->name,
-            'description' => $request->type,
+            'description' => $request->description, // Handle description
             'category_id' => $request->category_id,
+            'subcategory_id' => $request->subcategory_id, // Store subcategory_id
+            'brand_id' => $request->brand_id, // Store brand_id
+            'supplier_id' => $request->supplier_id, // Store supplier_id
             'branch_id' => $request->branch_id,
             'created_by' => Auth::id(),
-            'status' => 'in_stock',
             'item_img' => $imageUrl,
             'thumbnail_img' => $thumbnailUrl, // Store the thumbnail URL
+            'quantity' => $request->quantity, // Store quantity
+            'threshold' => 1, // Default threshold value
+            'available_quantity' => $request->quantity, // Set available quantity
         ]);
 
         // Create the serial numbers
@@ -102,7 +118,6 @@ class ItemController extends Controller
             SerialNumber::create([
                 'item_id' => $item->id,
                 'serial_number' => $serialNumber,
-                'status' => 'in_stock',
                 'created_by' => Auth::id(),
             ]);
         }
@@ -110,12 +125,17 @@ class ItemController extends Controller
         return redirect()->route('items.index')->with('success', 'Item created successfully with ' . count($request->serial_numbers) . ' serial numbers.');
     }
 
+
     // Show edit form
     public function edit(Item $item)
     {
         $categories = Category::all();
         $branches = Branch::all();
-        return view('items.edit', compact('item', 'categories', 'branches'));
+        $subcategories = SubCategory::all();  // Fetch subcategories
+        $brands = Brand::all();  // Fetch brands
+        $suppliers = Supplier::all();  // Fetch suppliers
+
+        return view('items.edit', compact('item', 'categories', 'branches', 'subcategories', 'brands', 'suppliers'));
     }
 
     // Update item and serial numbers
@@ -148,7 +168,6 @@ class ItemController extends Controller
             // If serial number exists, update it
             $existingSerial->update([
                 'serial_number' => $serialNumber,
-                'status' => 'in_stock',
                 'updated_by' => Auth::id(),
             ]);
         } else {
@@ -156,7 +175,6 @@ class ItemController extends Controller
             SerialNumber::create([
                 'item_id' => $item->id,
                 'serial_number' => $serialNumber,
-                'status' => 'in_stock',
                 'created_by' => Auth::id(),
             ]);
         }

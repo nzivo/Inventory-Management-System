@@ -20,10 +20,10 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-10">
-                            <h5 class="card-title">Edit Asset</h5>
+                            <h5 class="card-title">Edit Item</h5>
                         </div>
                         <div class="col-md-2 text-end">
-                            <a href="{{ route('items.index') }}" class="btn btn-primary mt-2">View Assets</a>
+                            <a href="{{ route('items.index') }}" class="btn btn-primary mt-2">View Items</a>
                         </div>
                     </div>
 
@@ -32,7 +32,7 @@
                         @method('PUT')
 
                         <div class="row mb-3">
-                            <label for="name" class="col-sm-2 col-form-label">Asset Name</label>
+                            <label for="name" class="col-sm-2 col-form-label">Item Name</label>
                             <div class="col-sm-10">
                                 <input type="text" name="name" id="name" class="form-control"
                                     value="{{ old('name', $item->name) }}" required>
@@ -42,8 +42,9 @@
                         <div class="row mb-3">
                             <label for="type" class="col-sm-2 col-form-label">Item Type</label>
                             <div class="col-sm-10">
-                                <input type="text" name="type" id="type" class="form-control"
-                                    value="{{ old('type', $item->description) }}" required>
+                                <textarea type="text" name="type" id="type" class="form-control"
+                                    value="{{ old('type', $item->description) }}"
+                                    required>{{$item->description}}</textarea>
                             </div>
                         </div>
 

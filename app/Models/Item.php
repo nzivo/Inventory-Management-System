@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Admin\Brand;
+use App\Models\Admin\SubCategory;
+use App\Models\Admin\Supplier;
 use App\Models\Assets\SerialNumber;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,11 +18,17 @@ class Item extends Model
         'thumbnail_img',
         'name',
         'description',
-        'serial_number',
+        'model_number',
         'category_id',
+        'subcategory_id', // Added
+        'brand_id', // Added
+        'supplier_id', // Added
         'branch_id',
         'created_by',
-        'status'
+        'status',
+        'quantity', // Added
+        'threshold',
+        'available_quantity'
     ];
 
     // Relationship with User (who added the item)
@@ -34,6 +43,21 @@ class Item extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function subcategory() // Added relationship
+    {
+        return $this->belongsTo(SubCategory::class);
+    }
+
+    public function brand() // Added relationship
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function supplier() // Added relationship
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
     // Relationship with Branch
     public function branch()
     {
@@ -43,5 +67,11 @@ class Item extends Model
     public function serialNumbers()
     {
         return $this->hasMany(SerialNumber::class);
+    }
+
+    // Check if enough stock is available for a request
+    public function hasEnoughStock($quantity)
+    {
+        return $this->quantity >= $quantity;
     }
 }

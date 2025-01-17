@@ -66,9 +66,9 @@
                         </div>
 
                         <div class="row mb-3">
-                            <label for="type" class="col-sm-2 col-form-label">Item Type</label>
+                            <label for="description" class="col-sm-2 col-form-label">Description</label>
                             <div class="col-sm-10">
-                                <input type="text" name="type" id="type" class="form-control" required>
+                                <textarea name="description" id="description" class="form-control"></textarea>
                             </div>
                         </div>
 
@@ -78,6 +78,42 @@
                                 <select name="category_id" id="category_id" class="form-control" required>
                                     @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="subcategory_id" class="col-sm-2 col-form-label">Subcategory</label>
+                            <div class="col-sm-10">
+                                <select name="subcategory_id" id="subcategory_id" class="form-control">
+                                    <option value="">Select Subcategory</option>
+                                    @foreach ($subcategories as $subcategory)
+                                    <option value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="brand_id" class="col-sm-2 col-form-label">Brand</label>
+                            <div class="col-sm-10">
+                                <select name="brand_id" id="brand_id" class="form-control">
+                                    <option value="">Select Brand</option>
+                                    @foreach ($brands as $brand)
+                                    <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="supplier_id" class="col-sm-2 col-form-label">Supplier</label>
+                            <div class="col-sm-10">
+                                <select name="supplier_id" id="supplier_id" class="form-control">
+                                    <option value="">Select Supplier</option>
+                                    @foreach ($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
