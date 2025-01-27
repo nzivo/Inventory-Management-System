@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Mail\UserCredentialsMail;
+use App\Models\Designation;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -51,10 +52,15 @@ class UserController extends Controller
     public function create(): View
     {
         $roles = Role::pluck('name', 'name')->all();
+
+        // Retrieve full Designation records, not just plucked values
+        $designations = Designation::select('id', 'designation_name', 'department_name')->get();
+
         $generatedPassword = Str::random(12); // or any length you prefer
 
-        return view('admin.users.create', compact('roles', 'generatedPassword'));
+        return view('admin.users.create', compact('roles', 'designations', 'generatedPassword'));
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -69,7 +75,8 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|same:confirm-password',
-            'roles' => 'required'
+            'roles' => 'required',
+            'designation_id' => 'required'
         ]);
 
         // Extract the username from the email (before @ symbol)

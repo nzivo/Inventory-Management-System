@@ -69,13 +69,25 @@ class DispatchRequestController extends Controller
 
     public function index()
     {
-        // Fetch all dispatch requests and paginate them
-        $dispatchRequests = DispatchRequest::with('user') // Eager load the 'user' relationship
-            ->orderBy('created_at', 'desc') // Optional: order by creation date
-            ->paginate(10); // Paginate with 10 items per page
+        // Check if the current user has the 'user' role
+        if (auth()->user()->hasRole('user')) {
+            // If user has 'user' role, return only their dispatch requests
+            $dispatchRequests = DispatchRequest::with('user') // Eager load the 'user' relationship
+                ->where('user_id', auth()->id()) // Filter by the currently authenticated user's ID
+                ->orderBy('created_at', 'desc') // Optional: order by creation date
+                ->paginate(10); // Paginate with 10 items per page
 
-        return view('inventory.dispatch_requests.index', compact('dispatchRequests'));
+            return view('inventory.dispatch_requests.user_index', compact('dispatchRequests')); // Adjusted view for users with 'user' role
+        } else {
+            // Fetch all dispatch requests for admins or other roles
+            $dispatchRequests = DispatchRequest::with('user') // Eager load the 'user' relationship
+                ->orderBy('created_at', 'desc') // Optional: order by creation date
+                ->paginate(10); // Paginate with 10 items per page
+
+            return view('inventory.dispatch_requests.index', compact('dispatchRequests'));
+        }
     }
+
 
     public function show($id)
     {

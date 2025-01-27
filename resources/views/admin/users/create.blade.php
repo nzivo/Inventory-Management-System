@@ -79,6 +79,20 @@
                             </div>
                         </div>
 
+                        <!-- Designation Dropdown -->
+                        <div class="row mb-3">
+                            <label for="designation_id" class="col-sm-2 col-form-label">Designation</label>
+                            <div class="col-sm-10">
+                                <select name="designation_id" id="designation_id" class="form-control" required>
+                                    @foreach ($designations as $designation)
+                                    <option value="{{ $designation->id }}">
+                                        {{ $designation->designation_name }} - {{ $designation->department_name }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="row mb-3">
                             <label for="roles" class="col-sm-2 col-form-label">Role</label>
                             <div class="col-sm-10">
