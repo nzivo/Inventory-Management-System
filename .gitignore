@@ -4,6 +4,7 @@
 /public/hot
 /public/storage
 /public/assets/item_images
+/public/assets/brand_images
 /storage/*.key
 /storage/pail
 /vendor
