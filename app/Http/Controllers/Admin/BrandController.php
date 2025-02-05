@@ -22,45 +22,55 @@ class BrandController extends Controller
         // Validate the request
         $request->validate([
             'name' => 'required|string|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Logo validation
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Logo validation
         ]);
+
+        // Handle the logo upload
+        $logoUrl = null;
+        $thumbnailUrl = null;
+
+        if ($request->hasFile('logo')) {
+            $logo = $request->file('logo');
+            $logoName = time() . '.' . $logo->getClientOriginalExtension();
+            $destinationPath = public_path('assets/brand_images');
+
+            // Ensure the directory exists
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+
+            // Move the uploaded logo
+            $logo->move($destinationPath, $logoName);
+            $logoUrl = asset('assets/brand_images/' . $logoName);
+
+            // Generate and store a thumbnail
+            $logoPath = public_path('assets/brand_images/' . $logoName);
+            $img = Image::make($logoPath);
+            $img->resize(150, 150); // Adjust thumbnail size if needed
+
+            // Ensure thumbnail directory exists
+            $thumbnailPath = public_path('assets/brand_images/thumbnails');
+            if (!file_exists($thumbnailPath)) {
+                mkdir($thumbnailPath, 0777, true);
+            }
+
+            // Save the thumbnail
+            $thumbnailFilePath = $thumbnailPath . '/' . $logoName;
+            $img->save($thumbnailFilePath);
+            $thumbnailUrl = asset('assets/brand_images/thumbnails/' . $logoName);
+        }
 
         // Create a new Brand instance
         $brand = new Brand();
         $brand->name = $request->name;
         $brand->created_by = Auth::id();
-
-        // Handling the logo upload
-        if ($request->hasFile('logo')) {
-            // Get the logo file
-            $logo = $request->file('logo');
-
-            // Generate a unique name for the image and store it in 'public/brand_images'
-            $logoName = time() . '.' . $logo->getClientOriginalExtension();
-            $logoPath = $logo->storeAs('public/brand_images', $logoName);
-
-            // Resize the logo to 500x500
-            $resizedLogoPath = public_path('storage/brand_images/' . $logoName);
-            $img = Image::make($resizedLogoPath);
-
-            // Resize the image to 500x500 pixels
-            $img->resize(500, 500, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize(); // Prevent upscaling smaller images
-            });
-
-            // Save the resized logo
-            $img->save($resizedLogoPath);
-
-            // Store the logo URL
-            $brand->logo = asset('storage/brand_images/' . $logoName);
-        }
-
-        // Save the brand to the database
+        $brand->logo = $logoUrl;
+        // $brand->thumbnail = $thumbnailUrl; // Store the thumbnail URL
         $brand->save();
 
-        return redirect()->route('brands.index')->with('success', 'Brand created successfully');
+        return redirect()->route('brands.index')->with('success', 'Brand created successfully.');
     }
+
 
     // Display all brands
     public function index()

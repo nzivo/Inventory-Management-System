@@ -39,7 +39,7 @@
                             <tr>
                                 <td>{{ ++$key }}</td>
                                 <td>{{ $brand->name }}</td>
-                                <td><img src="{{ asset('storage/logos/' . $brand->logo) }}" alt="logo" width="50"></td>
+                                <td><img src="{{ asset($brand->logo) }}" alt="logo" width="100"></td>
                                 <td>
                                     <a href="{{ route('brands.edit', $brand->id) }}"
                                         class="btn btn-primary btn-sm">Edit</a>
