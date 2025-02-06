@@ -28,6 +28,14 @@ class ItemController extends Controller
         return view('items.index', compact('items'));
     }
 
+    public function assets(Request $request)
+    {
+        // Get all items with their related data (serialNumbers, category, branch, and creator)
+        $items = Item::with(['serialNumbers', 'category', 'branch', 'creator'])->latest()->get();
+
+        return view('inventory.assets.index', compact('items'));
+    }
+
     public function show($id, Request $request)
     {
         // Find the item by its ID

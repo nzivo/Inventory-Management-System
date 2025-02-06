@@ -24,6 +24,7 @@ Route::middleware(['useradmin'])->group(
     function () {
 
         Route::resource('items', ItemController::class);
+        Route::get("/item-assets", [ItemController::class, 'assets'])->name('item.assets');
         Route::resource('dispatch_requests', DispatchRequestController::class);
         Route::post('dispatch_requests/{id}/update-status', [DispatchRequestController::class, 'updateStatus'])->name('dispatch_requests.updateStatus');
         Route::post('items/{item}/update-status', [ItemController::class, 'updateStatus'])->name('items.updateStatus');

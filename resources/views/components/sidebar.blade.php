@@ -16,8 +16,13 @@
             </a>
             <ul id="assets-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li>
+                    <a href="{{ route('item.assets') }}">
+                        <i class="bi bi-circle"></i><span>View Assets</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{url('/items')}}">
-                        <i class="bi bi-circle"></i><span>View</span>
+                        <i class="bi bi-circle"></i><span>View Items</span>
                     </a>
                 </li>
                 <li>
