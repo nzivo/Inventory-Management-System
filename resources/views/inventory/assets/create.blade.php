@@ -1,0 +1,119 @@
+@extends('layouts.dashboard')
+
+@section('content')
+
+<div class="pagetitle">
+    <h1>Assets</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url('/home') }}">Home</a></li>
+            <li class="breadcrumb-item">Assets</li>
+            <li class="breadcrumb-item active">Create</li>
+        </ol>
+    </nav>
+</div>
+
+@if(session('success'))
+<div class="alert alert-success">
+    {{ session('success') }}
+</div>
+@endif
+
+@if($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h5 class="card-title">Add Serial Numbers for {{ $item->name }}</h5>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <a href="{{ route('asset.assets') }}" class="btn btn-primary mt-2">View Assets</a>
+                        </div>
+                    </div>
+
+                    <form action="{{ route('serialnumbers.store', $item) }}" method="POST">
+                        @csrf
+
+                        <div class="row mb-3">
+                            <label for="quantity" class="col-sm-2 col-form-label">Quantity</label>
+                            <div class="col-sm-10">
+                                <input type="number" name="quantity" id="quantity" class="form-control" min="1"
+                                    value="1" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3" id="serialNumbersContainer">
+                            <label for="serial_number_1" class="col-sm-2 col-form-label">Serial Number #1:</label>
+                            <div class="serialNumberField col-sm-10">
+                                <input type="text" name="serial_numbers[]" id="serial_number_1"
+                                    class="form-control mb-3" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">&nbsp;</label>
+                            <div class="col-sm-10">
+                                <button type="submit" class="btn w-100 btn-primary">Add Serial Numbers</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@endsection
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        const quantityInput = document.getElementById('quantity');
+        const serialNumbersContainer = document.getElementById('serialNumbersContainer');
+
+        function updateSerialNumberFields() {
+            const quantity = parseInt(quantityInput.value);
+            const currentFields = serialNumbersContainer.querySelectorAll('.serialNumberField');
+
+            // Remove excess fields
+            if (currentFields.length > quantity) {
+                for (let i = currentFields.length - 1; i >= quantity; i--) {
+                    currentFields[i].remove();
+                }
+            }
+
+            // Add missing fields
+            for (let i = currentFields.length; i < quantity; i++) {
+                const serialNumberField = document.createElement('div');
+                serialNumberField.classList.add('serialNumberField');
+                serialNumberField.innerHTML = `
+                    <div class="row mb-3">
+                        <label for="serial_number_${i + 1}" class="col-sm-2 col-form-label">Serial Number #${i + 1}:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="serial_numbers[]" id="serial_number_${i + 1}" class="form-control" required>
+                        </div>
+                    </div>
+                `;
+                serialNumbersContainer.appendChild(serialNumberField);
+            }
+        }
+
+        // Initial population of serial number fields
+        updateSerialNumberFields();
+
+        // Add event listener to quantity input
+        quantityInput.addEventListener('input', updateSerialNumberFields);
+    });
+</script>
