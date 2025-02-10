@@ -28,7 +28,8 @@ class Item extends Model
         'status',
         'quantity', // Added
         'threshold',
-        'available_quantity'
+        'available_quantity',
+        'inventory_status'
     ];
 
     // Relationship with User (who added the item)

@@ -11,8 +11,7 @@ use App\Models\Category;
 use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 use Intervention\Image\Facades\Image;
 
 class ItemController extends Controller
@@ -50,8 +49,6 @@ class ItemController extends Controller
         // Return the view with the item and its serial number (if found)
         return view('items.show', compact('item', 'serialNumber'));
     }
-
-
 
     public function create()
     {
@@ -133,7 +130,6 @@ class ItemController extends Controller
         return redirect()->route('items.index')->with('success', 'Item created successfully with ' . count($request->serial_numbers) . ' serial numbers.');
     }
 
-
     // Show edit form
     public function edit(Item $item)
     {
@@ -190,10 +186,6 @@ class ItemController extends Controller
         return redirect()->route('items.index')->with('success', 'Item and serial number updated successfully!');
     }
 
-
-
-
-
     // Method to update item status
     public function updateStatus(Request $request, $id)
     {
@@ -206,5 +198,69 @@ class ItemController extends Controller
         $item->save();
 
         return redirect()->route('items.index')->with('status', 'Item status updated successfully');
+    }
+
+    // View a single asset
+    public function showAsset($id)
+    {
+        $item = Item::with([
+            'serialNumbers',
+            'category',
+            'branch',
+            'creator'
+        ])->findOrFail($id);
+        return view('inventory.assets.show', compact('item'));
+    }
+
+    // Edit an asset
+    public function editAsset($id)
+    {
+        $item = Item::findOrFail($id);
+        $categories = Category::all();
+        $branches = Branch::all();
+
+        return view('inventory.assets.edit', compact('item', 'categories', 'branches'));
+    }
+
+    // Update an asset
+    public function updateAsset(Request $request, $id)
+    {
+        $item = Item::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'quantity' => 'required|integer|min:1',
+            'category_id' => 'required|exists:categories,id',
+            'branch_id' => 'required|exists:branches,id',
+            'status' => 'required|in:active,inactive',
+            'inventory_status' => 'required|in:in_stock,out_of_stock',
+        ]);
+
+        // Debugging logs
+        Log::info('Updating Asset:', $request->all());
+
+        // Assign values and save
+        $item->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'quantity' => $request->quantity,
+            'category_id' => $request->category_id,
+            'branch_id' => $request->branch_id,
+            'status' => $request->status,
+            'inventory_status' => $request->inventory_status,
+        ]);
+
+        return redirect()->route('asset.assets')->with('success', 'Asset updated successfully');
+    }
+
+
+    // Delete an asset
+    public function destroyAsset($id)
+    {
+        $item = Item::findOrFail($id);
+        $item->delete();
+
+        return redirect()->route('asset.assets')->with('success', 'Asset deleted successfully');
     }
 }
