@@ -48,4 +48,10 @@ class SerialNumber extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    // Define the relationship between SerialNumber and User
+    public function user()
+    {
+        return $this->belongsTo(User::class);  // Assuming you have a 'user_id' field in the serial_numbers table
+    }
 }

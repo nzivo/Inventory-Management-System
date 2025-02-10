@@ -61,6 +61,17 @@ Route::middleware(['useradmin'])->group(
             return response()->json($subcategories);
         });
 
+        Route::prefix('serialnumbers')->name('serialnumbers.')->group(function () {
+            // Route to list serial numbers for the Employee Devices category
+            Route::get('employee-devices', [SerialNumberController::class, 'employeeDevicesIndex'])->name('employee_devices.index');
+
+            // Route to show the form to assign a serial number to a user
+            Route::get('{serialNumber}/assign', [SerialNumberController::class, 'assignForm'])->name('assign.form');
+
+            // Route to handle the assignment of a serial number to a user
+            Route::post('{serialNumber}/assign', [SerialNumberController::class, 'assign'])->name('assign');
+        });
+
 
         // Route::get();
         // Route::get("assets");

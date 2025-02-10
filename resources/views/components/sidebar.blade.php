@@ -30,6 +30,11 @@
                         <i class="bi bi-circle"></i><span>Add New Asset</span>
                     </a>
                 </li>
+                <li>
+                    <a href="{{route('/serialnumbers/employee-devices')}}">
+                        <i class="bi bi-circle"></i><span>Employee Devices</span>
+                    </a>
+                </li>
 
             </ul>
         </li><!-- End Components Nav -->
