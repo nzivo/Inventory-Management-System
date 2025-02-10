@@ -31,7 +31,7 @@
                         </div>
                     </div>
 
-                    <table id="itemsTable" class="table table-condensed table-striped">
+                    <table id="datatable" class="table table-condensed table-striped">
                         <thead>
                             <tr>
                                 <th>No</th>
