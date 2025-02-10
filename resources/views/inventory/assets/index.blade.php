@@ -14,6 +14,11 @@
 
 <section class="section">
     <div class="row">
+        @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+        @endif
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
@@ -56,16 +61,14 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="{{ route('items.show', $item->id) }}" class="btn btn-info btn-sm">View</a>
-                                    <a href="{{ route('items.edit', $item->id) }}"
+                                    <a href="{{ route('serialnumbers.create', $item->id) }}"
+                                        class="btn btn-success btn-sm m-1">Add Item</a>
+                                    <a href="{{ route('asset.showAsset', $item->id) }}"
+                                        class="btn btn-info btn-sm">View</a>
+                                    <a href="{{ route('asset.editAsset', $item->id) }}"
                                         class="btn btn-primary btn-sm">Edit</a>
-                                    <form action="{{ route('items.destroy', $item->id) }}" method="POST"
-                                        class="d-inline"
-                                        onsubmit="return confirm('Are you sure you want to delete this item?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                    </form>
+                                    <button onclick="confirmDelete('{{ route('asset.destroyAsset', $item->id) }}')"
+                                        class="btn btn-danger btn-sm">Delete</button>
                                 </td>
                             </tr>
                             @endforeach
@@ -77,6 +80,29 @@
         </div>
     </div>
 </section>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this asset?
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
 
@@ -95,4 +121,11 @@
         });
     });
 </script>
+<script>
+    function confirmDelete(url) {
+        document.getElementById('deleteForm').action = url;
+        $('#deleteModal').modal('show');
+    }
+</script>
+
 @endsection
