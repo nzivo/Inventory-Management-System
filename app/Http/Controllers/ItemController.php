@@ -66,11 +66,11 @@ class ItemController extends Controller
         // Validate the input
         $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:500', // Adjust validation for description
+            'description' => 'nullable|string|max:500',
             'category_id' => 'required|exists:categories,id',
-            'subcategory_id' => 'nullable|exists:subcategories,id', // Added validation for subcategory
-            'brand_id' => 'nullable|exists:brands,id', // Added validation for brand
-            'supplier_id' => 'nullable|exists:suppliers,id', // Added validation for supplier
+            'subcategory_id' => 'nullable|exists:subcategories,id',
+            'brand_id' => 'nullable|exists:brands,id',
+            'supplier_id' => 'nullable|exists:suppliers,id',
             'branch_id' => 'required|exists:branches,id',
             'quantity' => 'required|integer|min:1',
             'serial_numbers' => 'required|array|min:1',
@@ -86,36 +86,49 @@ class ItemController extends Controller
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $destinationPath = public_path('assets/item_images');
 
+            // Ensure the directory exists
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0777, true);
             }
 
+            // Move the uploaded image
             $image->move($destinationPath, $imageName);
             $imageUrl = asset('assets/item_images/' . $imageName);
 
+            // Ensure the thumbnails directory exists
+            $thumbnailPath = public_path('assets/item_images/thumbnails');
+            if (!file_exists($thumbnailPath)) {
+                mkdir($thumbnailPath, 0777, true);
+            }
+
             // Generate thumbnail
-            $imagePath = public_path('assets/item_images/' . $imageName);
-            $img = Image::make($imagePath);
-            $img->resize(150, 150); // Adjust thumbnail dimensions as needed
-            $img->save(public_path('assets/item_images/thumbnails/' . $imageName));
-            $thumbnailUrl = asset('assets/item_images/thumbnails/' . $imageName);
+            try {
+                $imagePath = public_path('assets/item_images/' . $imageName);
+                $img = Image::make($imagePath);
+                $img->resize(150, 150); // Adjust thumbnail dimensions as needed
+                $img->save(public_path('assets/item_images/thumbnails/' . $imageName));
+                $thumbnailUrl = asset('assets/item_images/thumbnails/' . $imageName);
+            } catch (\Exception $e) {
+                \Log::error("Error saving thumbnail: " . $e->getMessage());
+                return back()->with('error', 'There was an issue saving the thumbnail image.');
+            }
         }
 
         // Create the item
         $item = Item::create([
             'name' => $request->name,
-            'description' => $request->description, // Handle description
+            'description' => $request->description,
             'category_id' => $request->category_id,
-            'subcategory_id' => $request->subcategory_id, // Store subcategory_id
-            'brand_id' => $request->brand_id, // Store brand_id
-            'supplier_id' => $request->supplier_id, // Store supplier_id
+            'subcategory_id' => $request->subcategory_id,
+            'brand_id' => $request->brand_id,
+            'supplier_id' => $request->supplier_id,
             'branch_id' => $request->branch_id,
             'created_by' => Auth::id(),
             'item_img' => $imageUrl,
-            'thumbnail_img' => $thumbnailUrl, // Store the thumbnail URL
-            'quantity' => $request->quantity, // Store quantity
-            'threshold' => 1, // Default threshold value
-            'available_quantity' => $request->quantity, // Set available quantity
+            'thumbnail_img' => $thumbnailUrl,
+            'quantity' => $request->quantity,
+            'threshold' => 1,
+            'available_quantity' => $request->quantity,
         ]);
 
         // Create the serial numbers
@@ -124,6 +137,7 @@ class ItemController extends Controller
                 'item_id' => $item->id,
                 'serial_number' => $serialNumber,
                 'created_by' => Auth::id(),
+                'category_id' => $request->category_id,
             ]);
         }
 
