@@ -39,6 +39,7 @@ class SerialNumberController extends Controller
                 'item_id' => $item->id,
                 'serial_number' => $serialNumber,
                 'created_by' => Auth::id(),
+                'category_id' => $item->category_id,
             ]);
         }
 

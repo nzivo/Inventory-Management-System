@@ -31,7 +31,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{route('/serialnumbers/employee-devices')}}">
+                    <a href="{{route('serialnumbers.employee_devices.index')}}">
                         <i class="bi bi-circle"></i><span>Employee Devices</span>
                     </a>
                 </li>

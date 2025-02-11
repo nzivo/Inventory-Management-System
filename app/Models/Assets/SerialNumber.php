@@ -19,8 +19,10 @@ class SerialNumber extends Model
         'item_id',
         'serial_number',
         'status',
+        'user_id',
         'created_by',
         'updated_by',
+        'category_id',
     ];
 
     // The attributes that should be hidden for arrays

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('item_id');
             $table->string('serial_number')->unique();
-            $table->enum('status', ['available', 'requested', 'dispatched', 'installed', 'faulty', 'returned'])->default('available');
+            $table->enum('status', ['available', 'requested', 'dispatched', 'installed', 'faulty', 'returned', 'assigned'])->default('available');
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
