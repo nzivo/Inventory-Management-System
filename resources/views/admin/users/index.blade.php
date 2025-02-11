@@ -40,6 +40,7 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Roles</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -51,8 +52,19 @@
                                 <td>{{ $user->email }}</td>
                                 <td>
                                     @foreach($user->roles as $role)
-                                    <label class="badge bg-success">{{ $role->name }}</label>
+                                    <label class="badge bg-primary">{{ $role->name }}</label>
                                     @endforeach
+                                </td>
+                                <td>
+                                    @if($user->status == 'active')
+                                    <span class="badge bg-success">{{ $user->status }}</span>
+                                    @elseif($user->status == 'inactive')
+                                    <span class="badge bg-danger">{{ $user->status }}</span>
+                                    @elseif($user->status == 'pending')
+                                    <span class="badge bg-warning">{{ $user->status }}</span>
+                                    @else
+                                    <span class="badge bg-secondary">{{ $user->status }}</span>
+                                    @endif
                                 </td>
                                 <td>
                                     <!-- Show Button - Opens Modal -->

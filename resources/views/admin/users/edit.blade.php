@@ -92,6 +92,19 @@
                             </div>
                         </div>
 
+                        <!-- Status Dropdown -->
+                        <div class="row mb-3">
+                            <label for="status" class="col-sm-2 col-form-label">Status</label>
+                            <div class="col-sm-10">
+                                <select name="status" id="status" class="form-control" required>
+                                    <option value="{{$user->status}}">{{$user->status}}</option>
+                                    <option value="inactive" selected>Inactive</option>
+                                    <option value="active">Active</option>
+                                    <option value="suspended">Suspended</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="row mb-3">
                             <div class="col-sm-10 offset-sm-2">
                                 <button type="submit" class="btn w-100 btn-primary">Update User</button>

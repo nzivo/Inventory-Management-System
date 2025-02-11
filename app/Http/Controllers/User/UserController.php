@@ -76,7 +76,8 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|same:confirm-password',
             'roles' => 'required',
-            'designation_id' => 'required'
+            'designation_id' => 'required',
+            'status' => 'required',
         ]);
 
         // Extract the username from the email (before @ symbol)
@@ -153,7 +154,8 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'same:confirm-password',
-            'roles' => 'required'
+            'roles' => 'required',
+            'status' => 'required'
         ]);
 
         $input = $request->all();

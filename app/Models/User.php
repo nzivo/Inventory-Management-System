@@ -24,7 +24,8 @@ class User extends Authenticatable
         'email',
         'password',
         'phone_number',
-        'designation_id'
+        'designation_id',
+        'status'
     ];
 
     /**
@@ -48,5 +49,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function isActive()
+    {
+        return $this->status === 'active';
     }
 }
