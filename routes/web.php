@@ -72,6 +72,8 @@ Route::middleware(['useradmin'])->group(
             Route::post('{serialNumber}/assign', [SerialNumberController::class, 'assign'])->name('assign');
         });
 
+        Route::put('/serialnumbers/{serialNumber}/unassign', [SerialNumberController::class, 'unassignSerialNumber'])->name('serialnumbers.unassign');
+
 
         // Route::get();
         // Route::get("assets");

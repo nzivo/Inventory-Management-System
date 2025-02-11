@@ -84,4 +84,20 @@ class SerialNumberController extends Controller
 
         return redirect()->route('serialnumbers.employee_devices.index')->with('success', 'Serial number assigned successfully!');
     }
+
+    public function unassignSerialNumber(SerialNumber $serialNumber)
+    {
+        // Check if the serial number has an assigned user
+        if ($serialNumber->user) {
+            // Unassign the serial number by setting the user_id to null
+            $serialNumber->user_id = null;
+            $serialNumber->save();
+
+            // Redirect with success message
+            return redirect()->route('serialnumbers.employee_devices.index')->with('success', 'Serial number unassigned successfully.');
+        }
+
+        // If no user was assigned, return an error message
+        return redirect()->route('serialnumbers.employee_devices.index')->with('error', 'Serial number is not assigned to any user.');
+    }
 }
