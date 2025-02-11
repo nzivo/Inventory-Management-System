@@ -9,6 +9,7 @@ use App\Models\Assets\SerialNumber;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Item;
+use App\Models\SerialNumberLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -131,13 +132,20 @@ class ItemController extends Controller
             'available_quantity' => $request->quantity,
         ]);
 
-        // Create the serial numbers
+        // Create the serial numbers and log the creation
         foreach ($request->serial_numbers as $serialNumber) {
-            SerialNumber::create([
+            $serial = SerialNumber::create([
                 'item_id' => $item->id,
                 'serial_number' => $serialNumber,
                 'created_by' => Auth::id(),
                 'category_id' => $request->category_id,
+            ]);
+
+            // Log the creation activity
+            SerialNumberLog::create([
+                'serial_number_id' => $serial->id,
+                'user_id' => Auth::id(),
+                'description' => 'Created serial number ' . $serial->serial_number . ' by ' . auth()->user()->name,
             ]);
         }
 

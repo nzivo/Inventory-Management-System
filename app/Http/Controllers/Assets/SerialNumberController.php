@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Assets\SerialNumber;
 use App\Models\Category;
 use App\Models\Item;
+use App\Models\SerialNumberLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -82,6 +83,13 @@ class SerialNumberController extends Controller
         $serialNumber->status = 'assigned'; // Update the status if needed
         $serialNumber->save();
 
+        // Log the assignment activity
+        SerialNumberLog::create([
+            'serial_number_id' => $serialNumber->id,
+            'user_id' => auth()->user()->id,
+            'description' => 'Assigned serial number to user ' . $serialNumber->user->name,
+        ]);
+
         return redirect()->route('serialnumbers.employee_devices.index')->with('success', 'Serial number assigned successfully!');
     }
 
@@ -92,6 +100,13 @@ class SerialNumberController extends Controller
             // Unassign the serial number by setting the user_id to null
             $serialNumber->user_id = null;
             $serialNumber->save();
+
+            // Log the unassign activity
+            SerialNumberLog::create([
+                'serial_number_id' => $serialNumber->id,
+                'user_id' => auth()->user()->id,
+                'description' => 'Unassigned serial number from user ' . $serialNumber->user->name,
+            ]);
 
             // Redirect with success message
             return redirect()->route('serialnumbers.employee_devices.index')->with('success', 'Serial number unassigned successfully.');

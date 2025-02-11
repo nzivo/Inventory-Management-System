@@ -8,6 +8,7 @@ use App\Models\Assets\SerialNumber;
 use App\Models\DispatchRequest;
 use App\Models\DispatchRequestSerialNumber;
 use App\Models\Item;
+use App\Models\SerialNumberLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -56,6 +57,13 @@ class DispatchRequestController extends Controller
 
             // Update the status of serial numbers to 'requested'
             $serialNumber->update(['status' => 'requested']);
+
+            // Log the serial number status update in SerialNumberLog
+            SerialNumberLog::create([
+                'serial_number_id' => $serialNumber->id,
+                'user_id' => Auth::id(),
+                'description' => 'Updated serial number ' . $serialNumber->serial_number . ' status to requested for dispatch request.',
+            ]);
 
             // Create the relationship in the pivot table (dispatch_request_serial_numbers)
             $dispatchRequest->serialNumbers()->create([
@@ -125,6 +133,12 @@ class DispatchRequestController extends Controller
                 $serialNumber->update([
                     'status' => 'dispatched',
                 ]);
+
+                SerialNumberLog::create([
+                    'serial_number_id' => $serialNumber->id,
+                    'user_id' => auth()->user()->id,
+                    'description' => 'Dispatched item',
+                ]);
             }
         } else {
             // If the status is not approved, just update it to "denied"
@@ -140,6 +154,12 @@ class DispatchRequestController extends Controller
                 // Update the status of the serial number
                 $serialNumber->update([
                     'status' => 'available',
+                ]);
+
+                SerialNumberLog::create([
+                    'serial_number_id' => $serialNumber->id,
+                    'user_id' => auth()->user()->id,
+                    'description' => 'Not dispatched item made available for request',
                 ]);
             }
         }
