@@ -43,10 +43,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($items as $index => $item)
+                            @php $counter = 1; @endphp
+                            @foreach($items as $item)
                             @foreach($item->serialNumbers as $serialNumber)
                             <tr>
-                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $counter++ }}</td> <!-- Incrementing the counter manually -->
                                 <td>{{ $item->name }}</td>
                                 <td>
                                     @if($item->thumbnail_img)

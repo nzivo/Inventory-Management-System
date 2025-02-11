@@ -99,18 +99,30 @@
 
                     <!-- Associated Serial Numbers -->
                     <p>Items</p>
-                    <ul>
-                        @foreach($dispatchRequest->serialNumbers as $serial)
-                        <li>
-                            {{ $serial->serialNumber->serial_number }} -
-                            @if($serial->serialNumber->item)
-                            ({{ $serial->serialNumber->item->name }})
-                            @else
-                            (No item associated)
-                            @endif
-                        </li>
-                        @endforeach
-                    </ul>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>#</th> <!-- Added Number column -->
+                                <th>Serial Number</th>
+                                <th>Item Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($dispatchRequest->serialNumbers as $index => $serial)
+                            <tr>
+                                <td>{{ $index + 1 }}</td> <!-- Displaying the index as a number (starting from 1) -->
+                                <td>{{ $serial->serialNumber->serial_number }}</td>
+                                <td>
+                                    @if($serial->serialNumber->item)
+                                    {{ $serial->serialNumber->item->name }}
+                                    @else
+                                    No item associated
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
 
                     <table style="width: 100%; border: none;">
                         <tr>
