@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('item_img')->nullable();
             $table->string('name');
-            $table->text('description');
+            $table->longText('description');
             $table->string('model_number')->nullable(); // Unique serial number for each item
             $table->integer('quantity')->default(1);
             $table->integer('threshold')->default(1);
