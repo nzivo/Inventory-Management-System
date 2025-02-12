@@ -67,7 +67,7 @@ class ItemController extends Controller
         // Validate the input
         $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:500',
+            'description' => 'nullable|string ',
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => 'nullable|exists:subcategories,id',
             'brand_id' => 'nullable|exists:brands,id',
