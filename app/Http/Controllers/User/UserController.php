@@ -187,4 +187,28 @@ class UserController extends Controller
         return redirect()->route('users.index')
             ->with('success', 'User deleted successfully');
     }
+
+    public function updatePassword(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'password' => 'required|string|min:8',
+            'newpassword' => 'required|string|min:8|confirmed',
+        ]);
+
+        // Get the current user
+        $user = Auth::user();
+
+        // Check if the current password is correct
+        if (!Hash::check($request->password, $user->password)) {
+            return back()->withErrors(['password' => 'Current password is incorrect.']);
+        }
+
+        // Update the password
+        $user->password = Hash::make($request->newpassword);
+        $user->save();
+
+        // Redirect or respond with a success message
+        return back()->with('success', 'Password updated successfully.');
+    }
 }

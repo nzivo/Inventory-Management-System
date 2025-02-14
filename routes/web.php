@@ -74,6 +74,8 @@ Route::middleware(['useradmin'])->group(
 
         Route::put('/serialnumbers/{serialNumber}/unassign', [SerialNumberController::class, 'unassignSerialNumber'])->name('serialnumbers.unassign');
 
+        Route::post('/update-password', [UserController::class, 'updatePassword'])->name('update.password');
+
 
         // Route::get();
         // Route::get("assets");
