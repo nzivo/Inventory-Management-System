@@ -38,11 +38,11 @@ class UserController extends Controller
      */
     public function index(Request $request): View
     {
-        $data = User::latest()->paginate(5);
+        $data = User::latest()->get();  // Retrieve all users without pagination
 
-        return view('admin.users.index', compact('data'))
-            ->with('i', ($request->input('page', 1) - 1) * 5);
+        return view('admin.users.index', compact('data'));
     }
+
 
     /**
      * Show the form for creating a new resource.

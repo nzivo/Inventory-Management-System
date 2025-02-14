@@ -47,7 +47,8 @@
                         <tbody>
                             @foreach ($data as $key => $user)
                             <tr>
-                                <td>{{ ++$i }}</td>
+                                <!-- No pagination, just index directly from the loop -->
+                                <td>{{ $key + 1 }}</td>
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
                                 <td>
@@ -89,7 +90,7 @@
                         </tbody>
                     </table>
 
-                    {!! $data->links('pagination::bootstrap-5') !!}
+                    <!-- Pagination removed, no need for links -->
                 </div>
             </div>
         </div>
