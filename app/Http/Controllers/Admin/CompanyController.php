@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Admin\Company;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CompanyController extends Controller
 {
@@ -50,6 +52,11 @@ class CompanyController extends Controller
 
         // Create the new company
         Company::create($request->all());
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Created company", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         return redirect()->route('companies.index')
             ->with('success', 'Company created successfully.');
@@ -83,6 +90,12 @@ class CompanyController extends Controller
 
         // Update company details
         $company->update($request->all());
+
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Updated company", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         return redirect()->route('companies.index')
             ->with('success', 'Company details updated successfully.');

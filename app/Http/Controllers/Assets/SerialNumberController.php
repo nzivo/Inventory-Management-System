@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Assets;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Assets\SerialNumber;
 use App\Models\Category;
 use App\Models\Item;
@@ -43,6 +44,12 @@ class SerialNumberController extends Controller
                 'category_id' => $item->category_id,
             ]);
         }
+
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Added serial number(s)", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         // Redirect to the assets page with a success message
         return redirect()->route('asset.assets')->with('success', 'Items added successfully');
@@ -90,6 +97,12 @@ class SerialNumberController extends Controller
             'description' => 'Assigned serial number to user ' . $serialNumber->user->name,
         ]);
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Assigned a serial number", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('serialnumbers.employee_devices.index')->with('success', 'Serial number assigned successfully!');
     }
 
@@ -108,9 +121,21 @@ class SerialNumberController extends Controller
                 'description' => 'Unassigned serial number from user ' . $serialNumber->user->name,
             ]);
 
+            Activity::create([
+                'user_id' => Auth::id(), // From the request
+                'activity' => "Unassigned a serial number", // From the request
+                'status' => "completed",  // From the request
+            ]);
+
             // Redirect with success message
             return redirect()->route('serialnumbers.employee_devices.index')->with('success', 'Serial number unassigned successfully.');
         }
+
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Unassigned a serial number", // From the request
+            'status' => "failed",  // From the request
+        ]);
 
         // If no user was assigned, return an error message
         return redirect()->route('serialnumbers.employee_devices.index')->with('error', 'Serial number is not assigned to any user.');

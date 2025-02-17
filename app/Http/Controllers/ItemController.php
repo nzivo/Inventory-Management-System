@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity;
 use App\Models\Admin\Brand;
 use App\Models\Admin\SubCategory;
 use App\Models\Admin\Supplier;
@@ -149,6 +150,12 @@ class ItemController extends Controller
             ]);
         }
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Created " . $request->name . ".", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('items.index')->with('success', 'Item created successfully with ' . count($request->serial_numbers) . ' serial numbers.');
     }
 
@@ -205,6 +212,12 @@ class ItemController extends Controller
             ]);
         }
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Updated " . $request->name . ".", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('items.index')->with('success', 'Item and serial number updated successfully!');
     }
 
@@ -218,6 +231,12 @@ class ItemController extends Controller
         $item = Item::findOrFail($id);
         $item->status = $request->status;
         $item->save();
+
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Updated " . $item->name . " status.", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         return redirect()->route('items.index')->with('status', 'Item status updated successfully');
     }
@@ -273,6 +292,12 @@ class ItemController extends Controller
             'inventory_status' => $request->inventory_status,
         ]);
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Updated " . $request->name . ".", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('asset.assets')->with('success', 'Asset updated successfully');
     }
 
@@ -282,6 +307,12 @@ class ItemController extends Controller
     {
         $item = Item::findOrFail($id);
         $item->delete();
+
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Deleted " . $item->name . ".", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         return redirect()->route('asset.assets')->with('success', 'Asset deleted successfully');
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +34,11 @@ class BranchController extends Controller
                 'name' => $request->name,
                 'location' => $request->location,
                 'created_by' => Auth::id(), // This will work if the user is authenticated
+            ]);
+            Activity::create([
+                'user_id' => Auth::id(), // From the request
+                'activity' => "Created branch", // From the request
+                'status' => "completed",  // From the request
             ]);
         } else {
             return redirect()->route('login')->with('error', 'You must be logged in to create a branch.');
@@ -69,6 +75,12 @@ class BranchController extends Controller
             'updated_by' => auth()->id(), // Set updated_by to the current logged-in user
         ]);
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Updated branch", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('branches.index')->with('success', 'Branch updated successfully!');
     }
 
@@ -80,6 +92,12 @@ class BranchController extends Controller
         // For example, if there are related records, you may want to prevent deletion
 
         $branch->delete();
+
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Deleted branch", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         return redirect()->route('branches.index')->with('success', 'Branch deleted successfully!');
     }

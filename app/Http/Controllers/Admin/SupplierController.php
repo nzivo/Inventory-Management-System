@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Admin\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,6 +44,12 @@ class SupplierController extends Controller
         // Create the new supplier
         Supplier::create($validated);
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Created supplier", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('suppliers.index')->with('success', 'Supplier added successfully');
     }
 
@@ -76,6 +83,12 @@ class SupplierController extends Controller
         $supplier = Supplier::findOrFail($id);
         $supplier->update($validated);
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Updated supplier", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('suppliers.index')->with('success', 'Supplier updated successfully');
     }
 
@@ -85,6 +98,12 @@ class SupplierController extends Controller
     {
         $supplier = Supplier::findOrFail($id);
         $supplier->delete();
+
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Deleted supplier", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         return redirect()->route('suppliers.index')->with('success', 'Supplier deleted successfully');
     }

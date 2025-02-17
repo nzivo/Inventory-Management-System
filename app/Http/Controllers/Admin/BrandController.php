@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Admin\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -68,6 +69,12 @@ class BrandController extends Controller
         // $brand->thumbnail = $thumbnailUrl; // Store the thumbnail URL
         $brand->save();
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Created brand", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('brands.index')->with('success', 'Brand created successfully.');
     }
 
@@ -121,6 +128,12 @@ class BrandController extends Controller
 
         $brand->save();
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Updated branch", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('brands.index')->with('success', 'Brand updated successfully');
     }
 
@@ -136,6 +149,12 @@ class BrandController extends Controller
         }
 
         $brand->delete();
+
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Deleted branch", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         return redirect()->route('brands.index')->with('success', 'Brand deleted successfully');
     }

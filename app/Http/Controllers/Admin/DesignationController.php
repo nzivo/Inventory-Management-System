@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Designation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DesignationController extends Controller
 {
@@ -31,6 +33,12 @@ class DesignationController extends Controller
 
         Designation::create($request->all());
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Created designation", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('designations.index')->with('success', 'Designation created successfully.');
     }
 
@@ -52,6 +60,12 @@ class DesignationController extends Controller
         $designation = Designation::findOrFail($id);
         $designation->update($request->all());
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Updated designation", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('designations.index')->with('success', 'Designation updated successfully.');
     }
 
@@ -60,6 +74,12 @@ class DesignationController extends Controller
     {
         $designation = Designation::findOrFail($id);
         $designation->delete();
+
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Deleted designation", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         return redirect()->route('designations.index')->with('success', 'Designation deleted successfully.');
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Mail\UserCredentialsMail;
+use App\Models\Activity;
 use App\Models\Designation;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -101,9 +102,19 @@ class UserController extends Controller
 
         // Create the user
         $user = User::create($input);
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Create user", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         // Assign roles
         $user->assignRole($request->input('roles'));
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Assign roles to user", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         // Send the credentials email
         Mail::to($user->email)->send(new UserCredentialsMail($user, $password));
@@ -171,6 +182,12 @@ class UserController extends Controller
 
         $user->assignRole($request->input('roles'));
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Updated user", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('users.index')
             ->with('success', 'User updated successfully');
     }
@@ -184,6 +201,11 @@ class UserController extends Controller
     public function destroy($id): RedirectResponse
     {
         User::find($id)->delete();
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Delete user", // From the request
+            'status' => "completed",  // From the request
+        ]);
         return redirect()->route('users.index')
             ->with('success', 'User deleted successfully');
     }
@@ -207,6 +229,12 @@ class UserController extends Controller
         // Update the password
         $user->password = Hash::make($request->newpassword);
         $user->save();
+
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Update user password", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         // Redirect or respond with a success message
         return back()->with('success', 'Password updated successfully.');

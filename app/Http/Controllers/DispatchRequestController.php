@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\DispatchNoteMail;
+use App\Models\Activity;
 use App\Models\Admin\Company;
 use App\Models\Assets\SerialNumber;
 use App\Models\DispatchRequest;
@@ -125,6 +126,12 @@ class DispatchRequestController extends Controller
                 'approver_id' => Auth::id(), // Assign the approver
             ]);
 
+            Activity::create([
+                'user_id' => Auth::id(), // From the request
+                'activity' => "Approved dispatch request " . $dispatchRequest->dispatch_number . ".", // From the request
+                'status' => "completed",  // From the request
+            ]);
+
             // Update the status of associated serial numbers to "dispatched"
             foreach ($dispatchRequest->serialNumbers as $serialNumberRelation) {
                 $serialNumber = $serialNumberRelation->serialNumber;  // Get the actual serial number
@@ -145,6 +152,12 @@ class DispatchRequestController extends Controller
             $dispatchRequest->update([
                 'status' => 'denied',
                 'approver_id' => Auth::id(),
+            ]);
+
+            Activity::create([
+                'user_id' => Auth::id(), // From the request
+                'activity' => "Denied dispatch request " . $dispatchRequest->dispatch_number . ".", // From the request
+                'status' => "completed",  // From the request
             ]);
 
             // Update the status of associated serial numbers to "available"

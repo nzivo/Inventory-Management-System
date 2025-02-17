@@ -19,9 +19,14 @@
                 </a>
             </li><!-- End Search Icon-->
 
+            @if(auth()->user()->can('view-notifications'))
             @include('components.navbar.notifications')
+            @endif
 
+            @if(auth()->user()->can('view-messages'))
             @include('components.navbar.messages')
+            @endif
+
 
             @include('components.navbar.user')
 

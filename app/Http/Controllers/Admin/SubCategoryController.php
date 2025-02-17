@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Admin\SubCategory;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -38,6 +39,12 @@ class SubCategoryController extends Controller
                 'name' => $request->name,
                 'category_id' => $request->category_id,
                 'created_by' => Auth::id(),
+            ]);
+
+            Activity::create([
+                'user_id' => Auth::id(), // From the request
+                'activity' => "Created subcategory", // From the request
+                'status' => "completed",  // From the request
             ]);
         } else {
             return redirect()->route('login')->with('error', 'You must be logged in to create a subcategory.');
@@ -78,6 +85,12 @@ class SubCategoryController extends Controller
             'updated_by' => auth()->id(),
         ]);
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Updated subcategory", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         // Redirect with success message
         return redirect()->route('subcategories.index')->with('success', 'Subcategory updated successfully!');
     }
@@ -91,6 +104,12 @@ class SubCategoryController extends Controller
         // For example, if there are related records, you may want to prevent deletion
 
         $subcategory->delete();
+
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Deleted subcategory", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         // Redirect with success message
         return redirect()->route('subcategories.index')->with('success', 'Subcategory deleted successfully!');

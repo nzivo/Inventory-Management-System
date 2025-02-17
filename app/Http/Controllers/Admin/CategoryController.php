@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +32,11 @@ class CategoryController extends Controller
             Category::create([
                 'name' => $request->name,
                 'created_by' => Auth::id(), // This will work if the user is authenticated
+            ]);
+            Activity::create([
+                'user_id' => Auth::id(), // From the request
+                'activity' => "Created category", // From the request
+                'status' => "completed",  // From the request
             ]);
         } else {
             return redirect()->route('login')->with('error', 'You must be logged in to create a category.');
@@ -65,6 +71,12 @@ class CategoryController extends Controller
             'updated_by' => auth()->id(), // Set updated_by to the current logged-in user
         ]);
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Updated category", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('categories.index')->with('success', 'Category updated successfully!');
     }
 
@@ -76,6 +88,12 @@ class CategoryController extends Controller
         // For example, if there are related records, you may want to prevent deletion
 
         $category->delete();
+
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Deleted category", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         return redirect()->route('categories.index')->with('success', 'Category deleted successfully!');
     }

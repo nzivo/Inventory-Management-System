@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
@@ -27,6 +29,12 @@ class PermissionController extends Controller
 
         Permission::create(['name' => $request->name]);
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Created a permission", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('permissions.index')->with('success', 'Permission created successfully');
     }
 
@@ -43,12 +51,24 @@ class PermissionController extends Controller
 
         $permission->update(['name' => $request->name]);
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Updated a permission", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('permissions.index')->with('success', 'Permission updated successfully');
     }
 
     public function destroy(Permission $permission)
     {
         $permission->delete();
+
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Deleted a permission", // From the request
+            'status' => "completed",  // From the request
+        ]);
 
         return redirect()->route('permissions.index')->with('success', 'Permission deleted successfully');
     }

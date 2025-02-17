@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Spatie\Permission\Models\Permission;
@@ -71,6 +73,12 @@ class RoleController extends Controller
         $role = Role::create(['name' => $request->input('name')]);
         $role->syncPermissions($permissionsID);
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Created a role", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('roles.index')
             ->with('success', 'Role created successfully');
     }
@@ -134,6 +142,12 @@ class RoleController extends Controller
 
         $role->syncPermissions($permissionsID);
 
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Updated a role", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('roles.index')
             ->with('success', 'Role updated successfully');
     }
@@ -146,6 +160,13 @@ class RoleController extends Controller
     public function destroy($id): RedirectResponse
     {
         DB::table("roles")->where('id', $id)->delete();
+
+        Activity::create([
+            'user_id' => Auth::id(), // From the request
+            'activity' => "Deleted a role", // From the request
+            'status' => "completed",  // From the request
+        ]);
+
         return redirect()->route('roles.index')
             ->with('success', 'Role deleted successfully');
     }
