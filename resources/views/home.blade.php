@@ -55,7 +55,7 @@
                     </div>
                 </div><!-- End Sales Card -->
 
-                @if(auth()->user()->hasRole('Super Admin'))
+
                 <!-- Revenue Card -->
                 <div class="col-xxl-4 col-md-6">
                     <div class="card info-card revenue-card">
@@ -92,7 +92,6 @@
 
                     </div>
                 </div><!-- End Revenue Card -->
-                @endif
 
                 <!-- Customers Card -->
                 <div class="col-xxl-4 col-xl-12">
@@ -133,7 +132,7 @@
 
                 </div><!-- End Customers Card -->
 
-                @if(auth()->user()->hasRole('Super Admin'))
+                @if(auth()->user()->can('view-reports'))
                 <!-- Reports -->
                 <div class="col-12">
                     <div class="card">
@@ -215,7 +214,9 @@
 
                     </div>
                 </div><!-- End Reports -->
+                @endif
 
+                @if(auth()->user()->can('view-sales'))
                 <!-- Recent Sales -->
                 <div class="col-12">
                     <div class="card recent-sales overflow-auto">
@@ -335,6 +336,7 @@
                 </div>
             </div><!-- End Recent Activity -->
 
+            @if(auth()->user()->can('view-budget'))
             <!-- Budget Report -->
             <div class="card">
                 <div class="filter">
@@ -408,7 +410,9 @@
 
                 </div>
             </div><!-- End Budget Report -->
+            @endif
 
+            @if(auth()->user()->can('view-web-traffic'))
             <!-- Website Traffic -->
             <div class="card">
                 <div class="filter">
@@ -486,6 +490,7 @@
 
                 </div>
             </div><!-- End Website Traffic -->
+            @endif
 
         </div><!-- End Right side columns -->
         {{-- @endif --}}
