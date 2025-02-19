@@ -30,4 +30,36 @@
         <p>No serial number details available.</p>
     </div>
     @endif
+
+    <div class="col-md-12">
+        <!-- Display Serial Number Logs -->
+        <h6 class="mt-4">Asset History:</h6>
+        @if($serialNumber->serialNumberLogs->isEmpty())
+        <p>No logs available for this serial number.</p>
+        @else
+        <table class="table table-condensed table-striped" id="datatable">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>User</th>
+                    <th>Description</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php $counter = 1; @endphp
+                @foreach($serialNumber->serialNumberLogs as $log)
+                <tr>
+                    <td>{{ $counter++ }}</td>
+                    <td><span class="badge bg-secondary">{{ $log->user->name ?? 'Unknown User' }}</span>
+                    </td>
+                    <td>{{ $log->description }}</td>
+                    <td>{{ $log->created_at->format('Y-m-d H:i:s') }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+        @endif
+    </div>
+
 </div>

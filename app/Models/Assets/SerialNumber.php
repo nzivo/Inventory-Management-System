@@ -3,6 +3,7 @@
 namespace App\Models\Assets;
 
 use App\Models\Item;
+use App\Models\SerialNumberLog;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,5 +56,11 @@ class SerialNumber extends Model
     public function user()
     {
         return $this->belongsTo(User::class);  // Assuming you have a 'user_id' field in the serial_numbers table
+    }
+
+    // Define the relationship to SerialNumberLog
+    public function serialNumberLogs()
+    {
+        return $this->hasMany(SerialNumberLog::class);
     }
 }

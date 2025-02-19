@@ -39,8 +39,8 @@ class ItemController extends Controller
 
     public function show($id, Request $request)
     {
-        // Find the item by its ID
-        $item = Item::with(['serialNumbers', 'category', 'branch', 'creator'])->findOrFail($id);
+        // Find the item by its ID, including serial numbers and their logs
+        $item = Item::with(['serialNumbers.serialNumberLogs.user', 'category', 'branch', 'creator'])->findOrFail($id);
 
         // If serial_id is provided, get the corresponding serial number
         $serialNumber = null;
@@ -51,6 +51,7 @@ class ItemController extends Controller
         // Return the view with the item and its serial number (if found)
         return view('items.show', compact('item', 'serialNumber'));
     }
+
 
     public function create()
     {
