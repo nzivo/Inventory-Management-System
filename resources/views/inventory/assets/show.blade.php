@@ -18,8 +18,10 @@
         </div>
         <div class="card-footer">
             <a href="{{ route('asset.assets') }}" class="btn btn-secondary">Back</a>
-            <a href="{{ route('asset.editAsset', $item->id) }}" class="btn btn-primary">Edit</a>
-            <a href="{{ route('serialnumbers.create', $item->id) }}" class="btn btn-success btn-sm">Add Items</a>
+            @if(auth()->user()->can('edit-asset'))
+            <a href="{{ route('asset.editAsset', $item->id) }}" class="btn btn-primary">Edit</a>@endif
+            @if(auth()->user()->can('add-asset-item'))
+            <a href="{{ route('serialnumbers.create', $item->id) }}" class="btn btn-success btn-sm">Add Items</a>@endif
         </div>
     </div>
 </div>

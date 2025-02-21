@@ -27,7 +27,9 @@
                             <h5 class="card-title">All Assets</h5>
                         </div>
                         <div class="col-md-2 text-end">
+                            @if(auth()->user()->can('create-assets'))
                             <a href="{{ route('items.create') }}" class="btn btn-primary mt-2">Add New Item</a>
+                            @endif
                         </div>
                     </div>
 
@@ -61,14 +63,20 @@
                                     </span>
                                 </td>
                                 <td>
+                                    @if(auth()->user()->can('add-asset-item'))
                                     <a href="{{ route('serialnumbers.create', $item->id) }}"
                                         class="btn btn-success btn-sm m-1">Add Item</a>
+                                    @endif
                                     <a href="{{ route('asset.showAsset', $item->id) }}"
                                         class="btn btn-info btn-sm">View</a>
+                                    @if(auth()->user()->can('edit-asset'))
                                     <a href="{{ route('asset.editAsset', $item->id) }}"
                                         class="btn btn-primary btn-sm">Edit</a>
+                                    @endif
+                                    @if(auth()->user()->can('delete-asset'))
                                     <button onclick="confirmDelete('{{ route('asset.destroyAsset', $item->id) }}')"
                                         class="btn btn-danger btn-sm">Delete</button>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach

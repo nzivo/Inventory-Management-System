@@ -23,7 +23,9 @@
                             <h5 class="card-title">All Assets</h5>
                         </div>
                         <div class="col-md-2 text-end">
-                            <a href="{{ route('items.create') }}" class="btn btn-primary mt-3">Create New Asset</a>
+                            @if(auth()->user()->can('create-assets'))
+                            <a href="{{ route('items.create') }}" class="btn btn-primary mt-3">Create New
+                                Asset</a>@endif
                         </div>
                     </div>
 

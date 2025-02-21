@@ -25,11 +25,13 @@
                         <i class="bi bi-circle"></i><span>View Items</span>
                     </a>
                 </li>
+                @if(auth()->user()->can('create-assets'))
                 <li>
                     <a href="{{url('/items/create')}}">
                         <i class="bi bi-circle"></i><span>Add New Asset</span>
                     </a>
                 </li>
+                @endif
                 <li>
                     <a href="{{route('serialnumbers.employee_devices.index')}}">
                         <i class="bi bi-circle"></i><span>Employee Devices</span>
