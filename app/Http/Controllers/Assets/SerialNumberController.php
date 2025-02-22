@@ -90,6 +90,10 @@ class SerialNumberController extends Controller
         $serialNumber->status = 'assigned'; // Update the status if needed
         $serialNumber->save();
 
+        // Reduce the available quantity of the item
+        $serialNumber->item->available_quantity = $serialNumber->item->available_quantity - 1;
+        $serialNumber->item->save();
+
         // Log the assignment activity
         SerialNumberLog::create([
             'serial_number_id' => $serialNumber->id,
@@ -98,13 +102,14 @@ class SerialNumberController extends Controller
         ]);
 
         Activity::create([
-            'user_id' => Auth::id(), // From the request
-            'activity' => "Assigned a serial number", // From the request
-            'status' => "completed",  // From the request
+            'user_id' => Auth::id(),
+            'activity' => "Assigned a serial number",
+            'status' => "completed",
         ]);
 
         return redirect()->route('serialnumbers.employee_devices.index')->with('success', 'Serial number assigned successfully!');
     }
+
 
     public function unassignSerialNumber(SerialNumber $serialNumber)
     {
@@ -112,7 +117,12 @@ class SerialNumberController extends Controller
         if ($serialNumber->user) {
             // Unassign the serial number by setting the user_id to null
             $serialNumber->user_id = null;
+            $serialNumber->status = 'available'; // Change status back to available
             $serialNumber->save();
+
+            // Increase the available quantity of the item
+            $serialNumber->item->available_quantity = $serialNumber->item->available_quantity + 1;
+            $serialNumber->item->save();
 
             // Log the unassign activity
             SerialNumberLog::create([
@@ -122,9 +132,9 @@ class SerialNumberController extends Controller
             ]);
 
             Activity::create([
-                'user_id' => Auth::id(), // From the request
-                'activity' => "Unassigned a serial number", // From the request
-                'status' => "completed",  // From the request
+                'user_id' => Auth::id(),
+                'activity' => "Unassigned a serial number",
+                'status' => "completed",
             ]);
 
             // Redirect with success message
@@ -132,9 +142,9 @@ class SerialNumberController extends Controller
         }
 
         Activity::create([
-            'user_id' => Auth::id(), // From the request
-            'activity' => "Unassigned a serial number", // From the request
-            'status' => "failed",  // From the request
+            'user_id' => Auth::id(),
+            'activity' => "Unassigned a serial number",
+            'status' => "failed",
         ]);
 
         // If no user was assigned, return an error message
