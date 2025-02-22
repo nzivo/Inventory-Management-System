@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Mail\DispatchNoteMail;
+use App\Mail\DispatchRequestNotification;
 use App\Models\Activity;
 use App\Models\Admin\Company;
 use App\Models\Assets\SerialNumber;
 use App\Models\DispatchRequest;
 use App\Models\DispatchRequestSerialNumber;
+use App\Models\EmailSubscriber;
 use App\Models\Item;
 use App\Models\SerialNumberLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class DispatchRequestController extends Controller
 {
@@ -72,8 +75,23 @@ class DispatchRequestController extends Controller
             ]);
         }
 
+        // Send the email notification (for low stock or dispatch request)
+        $this->sendDispatchNotification($dispatchRequest);
+
         // Return to the dispatch request index with a success message
         return redirect()->route('dispatch_requests.index')->with('success', 'Dispatch request created successfully!');
+    }
+
+    private function sendDispatchNotification(DispatchRequest $dispatchRequest)
+    {
+        // Retrieve a list of email subscribers who are subscribed to 'dispatch_request' notifications
+        $subscribers = EmailSubscriber::where('type', 'dispatch_request')->get();
+
+        // Loop through each subscriber and send the email notification
+        foreach ($subscribers as $subscriber) {
+            // Send the dispatch request notification email to each subscriber
+            Mail::to($subscriber->email)->send(new DispatchRequestNotification($dispatchRequest));
+        }
     }
 
     public function index()

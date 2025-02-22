@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Assets;
 
 use App\Http\Controllers\Controller;
+use App\Mail\LowStockNotification;
 use App\Models\Activity;
 use App\Models\Assets\SerialNumber;
 use App\Models\Category;
+use App\Models\EmailSubscriber;
 use App\Models\Item;
 use App\Models\SerialNumberLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class SerialNumberController extends Controller
 {
@@ -87,12 +90,23 @@ class SerialNumberController extends Controller
 
         // Assign the user to the serial number
         $serialNumber->user_id = $request->user_id;
-        $serialNumber->status = 'assigned'; // Update the status if needed
+        $serialNumber->status = 'assigned';
         $serialNumber->save();
 
         // Reduce the available quantity of the item
         $serialNumber->item->available_quantity = $serialNumber->item->available_quantity - 1;
         $serialNumber->item->save();
+
+        // Check if the available quantity is below the threshold
+        if ($serialNumber->item->available_quantity < $serialNumber->item->threshold) {
+            // Get the list of subscribers who want stock notifications
+            $subscribers = EmailSubscriber::where('type', 'stock_notification')->get();
+
+            // Send email to all stock notification subscribers
+            foreach ($subscribers as $subscriber) {
+                Mail::to($subscriber->email)->send(new LowStockNotification($serialNumber->item, 'stock_notification'));
+            }
+        }
 
         // Log the assignment activity
         SerialNumberLog::create([
@@ -117,12 +131,23 @@ class SerialNumberController extends Controller
         if ($serialNumber->user) {
             // Unassign the serial number by setting the user_id to null
             $serialNumber->user_id = null;
-            $serialNumber->status = 'available'; // Change status back to available
+            $serialNumber->status = 'available';
             $serialNumber->save();
 
             // Increase the available quantity of the item
             $serialNumber->item->available_quantity = $serialNumber->item->available_quantity + 1;
             $serialNumber->item->save();
+
+            // Check if the available quantity is below the threshold after unassigning
+            if ($serialNumber->item->available_quantity < $serialNumber->item->threshold) {
+                // Get the list of subscribers who want stock notifications
+                $subscribers = EmailSubscriber::where('type', 'stock_notification')->get();
+
+                // Send email to all stock notification subscribers
+                foreach ($subscribers as $subscriber) {
+                    Mail::to($subscriber->email)->send(new LowStockNotification($serialNumber->item, 'stock_notification'));
+                }
+            }
 
             // Log the unassign activity
             SerialNumberLog::create([
