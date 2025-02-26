@@ -58,9 +58,13 @@
                                 <td>{{ $item->quantity }}</td>
                                 <td>{{ $item->available_quantity }}</td>
                                 <td>
+                                    @if ($item->available_quantity == 0)
+                                    <span class="badge bg-warning">Out of Stock</span>
+                                    @else
                                     <span class="badge bg-{{ $item->status == 'active' ? 'success' : 'danger' }}">
                                         {{ ucfirst($item->status) }}
                                     </span>
+                                    @endif
                                 </td>
                                 <td>
                                     @if(auth()->user()->can('add-asset-item'))
