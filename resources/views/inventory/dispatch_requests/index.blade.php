@@ -55,7 +55,14 @@
                                         {{ ucfirst($dispatchRequest->status) }}
                                     </span>
                                 </td>
+                                {{-- <td>{{ $dispatchRequest->approver->name }}</td> --}}
+                                @if($dispatchRequest->approver->name === '')
+                                <td>{{ Null }}</td>
+                                @else
                                 <td>{{ $dispatchRequest->approver->name }}</td>
+                                @endif
+
+
                                 <td>{{ $dispatchRequest->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
                                     <a href="{{ route('dispatch_requests.show', $dispatchRequest->id) }}"

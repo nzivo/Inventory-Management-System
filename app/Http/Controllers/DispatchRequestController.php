@@ -210,4 +210,21 @@ class DispatchRequestController extends Controller
         // Return the view with both dispatchRequest and company data
         return view('inventory.dispatch_requests.print_gate_pass', compact('dispatchRequest', 'company'));
     }
+
+    // Destroy or Delete a Dispatch request
+    public function destroy($id)
+    {
+        // Find the dispatch request by ID
+        $dispatchRequest = DispatchRequest::find($id);
+
+        // Check if it exists
+        if (!$dispatchRequest) {
+            return redirect()->back()->with('error', 'Dispatch request not found.');
+        }
+
+        // Delete the dispatch request
+        $dispatchRequest->delete();
+
+        return redirect()->back()->with('success', 'Dispatch request deleted successfully.');
+    }
 }
