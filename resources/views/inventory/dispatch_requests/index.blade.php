@@ -37,6 +37,7 @@
                                 <th>User</th>
                                 <th>Site</th>
                                 <th>Status</th>
+                                <th>Approved By</th>
                                 <th>Created At</th>
                                 <th>Actions</th>
                             </tr>
@@ -54,6 +55,7 @@
                                         {{ ucfirst($dispatchRequest->status) }}
                                     </span>
                                 </td>
+                                <td>{{ $dispatchRequest->approver->name }}</td>
                                 <td>{{ $dispatchRequest->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
                                     <a href="{{ route('dispatch_requests.show', $dispatchRequest->id) }}"
