@@ -15,7 +15,7 @@
     <p>Serial Numbers:</p>
     <ul>
         @foreach ($dispatchRequest->serialNumbers as $serialNumber)
-        <li>{{ $serialNumber->serial_number_id }}</li>
+        <li>{{ $serialNumber->serial_number_id}}</li>
         @endforeach
     </ul>
 </body>
