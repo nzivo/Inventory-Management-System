@@ -112,7 +112,7 @@ class ItemController extends Controller
                 $img->save(public_path('assets/item_images/thumbnails/' . $imageName));
                 $thumbnailUrl = asset('assets/item_images/thumbnails/' . $imageName);
             } catch (\Exception $e) {
-                \Log::error("Error saving thumbnail: " . $e->getMessage());
+                Log::error("Error saving thumbnail: " . $e->getMessage());
                 return back()->with('error', 'There was an issue saving the thumbnail image.');
             }
         }
