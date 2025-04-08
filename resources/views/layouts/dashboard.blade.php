@@ -36,6 +36,7 @@
 
     <!-- Template Main CSS File -->
     <link href="{{ url('')}}/assets/css/style.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -87,6 +88,18 @@
 
     <!-- Template Main JS File -->
     <script src="{{ url('')}}/assets/js/main.js"></script>
+
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#serial_numbers').select2(); // Use the actual ID or class of your select
+        });
+    </script>
 
 </body>
 

@@ -53,7 +53,7 @@
                             <div class="col-sm-10">
                                 <input type="file" name="item_img" id="item_img" class="form-control" accept="image/*"
                                     onchange="previewImage(event)" required>
-                                <img id="imgPreview" src="" alt="Image Preview"
+                                <img id="imgPreview" src="" alt="Preview"
                                     style="max-width: 200px; margin-top: 10px;">
                             </div>
                         </div>

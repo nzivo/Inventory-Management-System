@@ -68,7 +68,7 @@
                         <div class="row mb-3">
                             <label for="serial_numbers" class="col-sm-2 col-form-label">Serial Numbers</label>
                             <div class="col-sm-10">
-                                <select name="serial_numbers[]" id="serial_numbers" class="form-control" multiple
+                                <select name="serial_numbers[]" id="serial_numbers" class="form-control select2" multiple
                                     required>
                                     @foreach($serialNumbers as $serialNumber)
                                     <option value="{{ $serialNumber->id }}">
