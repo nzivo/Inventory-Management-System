@@ -37,6 +37,11 @@
                         <i class="bi bi-circle"></i><span>Employee Devices</span>
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('reports.assets') }}">
+                        <i class="bi bi-circle"></i><span>Assets Store Count</span>
+                    </a>
+                </li>
 
             </ul>
         </li><!-- End Components Nav -->
