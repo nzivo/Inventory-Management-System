@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Assets\SerialNumberController;
 use App\Http\Controllers\DispatchRequestController;
+use App\Http\Controllers\AssetReportController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\User\PermissionController;
 use App\Http\Controllers\User\RoleController;
@@ -76,10 +77,7 @@ Route::middleware(['useradmin'])->group(
 
         Route::post('/update-password', [UserController::class, 'updatePassword'])->name('update.password');
 
+        Route::get('/reports/assets', [AssetReportController::class, 'index'])->name('reports.assets');
 
-        // Route::get();
-        // Route::get("assets");
-        // Route::get("assets/add", []);
-        // Route::get();
     }
 );
