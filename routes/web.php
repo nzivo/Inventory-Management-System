@@ -79,5 +79,8 @@ Route::middleware(['useradmin'])->group(
 
         Route::get('/reports/assets', [AssetReportController::class, 'index'])->name('reports.assets');
 
+        Route::post('/assets/{item}/dispatch', [AssetReportController::class, 'dispatch'])->name('assets.dispatch');
+
+
     }
 );

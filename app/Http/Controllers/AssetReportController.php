@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Models\ItemLog;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Notifications\LowStockNotification;
@@ -20,21 +21,16 @@ class AssetReportController extends Controller
         }
 
         $total = $query->count();
-
-        // These depend on available quantity logic now
         $lowStock = (clone $query)->whereColumn('available_quantity', '<', 'threshold')->count();
         $inStock = (clone $query)->whereColumn('available_quantity', '>=', 'threshold')->count();
 
-
-        // Get asset counts by name
         $byType = (clone $query)
-            ->selectRaw('name,SUM(quantity) as total_quantity,SUM(available_quantity) as total_available,SUM(quantity - available_quantity) as dispatched,MIN(threshold) as threshold')
-            ->groupBy('name')
+            ->selectRaw('id, name, SUM(quantity) as total_quantity, SUM(available_quantity) as total_available, SUM(quantity - available_quantity) as dispatched, MIN(threshold) as threshold')
+            ->groupBy('id', 'name')
             ->get();
 
         $dispatched = (clone $query)->selectRaw('SUM(quantity - available_quantity) as dispatched')->value('dispatched');
 
-        // Notify admin if low stock
         foreach ($byType as $asset) {
             if ($asset->total_available < $asset->threshold) {
                 $admin = User::where('is_admin', true)->first();
@@ -54,8 +50,42 @@ class AssetReportController extends Controller
                 }
             }
         }
+
         return view('reports.assets', compact('total', 'lowStock', 'inStock', 'byType', 'dispatched'));
     }
+
+    public function dispatch(Request $request, Item $item)
+    {
+        $validated = $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'note' => 'nullable|string'
+        ]);
+
+        $dispatchQty = min($validated['quantity'], $item->available_quantity);
+
+        if ($dispatchQty <= 0) {
+            return back()->withErrors(['quantity' => 'No available stock to dispatch.']);
+        }
+
+        $item->available_quantity -= $dispatchQty;
+
+        if ($item->available_quantity === 0) {
+            $item->store_status = 'dispatched';
+        }
+
+        $item->save();
+
+        ItemLog::create([
+            'item_id' => $item->id,
+            'action' => 'dispatched',
+            'quantity' => $dispatchQty,
+            'note' => $validated['note'] ?? null,
+            'logged_at' => now()
+        ]);
+
+        return redirect()->route('reports.assets')->with('success', "Dispatched $dispatchQty units of {$item->name}.");
+    }
 }
+
 
 

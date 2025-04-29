@@ -33,7 +33,8 @@
                         </div>
                     </div>
 
-                    <table id="datatable" class="table table-condensed table-striped">
+                    {{-- <table id="datatable" class="table table-condensed table-striped"> --}}
+                    <table id="itemsTable" class="table table-condensed table-striped">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -78,7 +79,7 @@
                                         class="btn btn-primary btn-sm">Edit</a>
                                     @endif
                                     @if(auth()->user()->can('delete-asset'))
-                                    <button onclick="confirmDelete('{{ route('asset.destroyAsset', $item->id) }}')"
+                                    <button type="button" onclick="confirmDelete('{{ route('asset.destroyAsset', $item->id) }}')"
                                         class="btn btn-danger btn-sm">Delete</button>
                                     @endif
                                 </td>
@@ -122,6 +123,8 @@
 <!-- Include DataTables script -->
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<!-- Bootstrap JS (for the modal) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -136,7 +139,10 @@
 <script>
     function confirmDelete(url) {
         document.getElementById('deleteForm').action = url;
-        $('#deleteModal').modal('show');
+        // $('#deleteModal').modal('show');
+
+        var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
     }
 </script>
 

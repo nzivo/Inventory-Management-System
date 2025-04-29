@@ -42,37 +42,52 @@
         @endif
     @endif
 
+    <!-- Success message -->
+    @if(session('success'))
+    <div class="bg-green-100 text-green-800 p-2 rounded mb-4">
+        {{ session('success') }}
+    </div>
+    @endif
+
     <!-- Asset Counts by Type -->
     @if($byType->isNotEmpty())
-        <div class="bg-white dark:bg-gray-800 shadow rounded-md p-4 mb-6">
-            <h5 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Assets in Store by Type</h5>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-700 dark:text-gray-300">
-                    <thead class="text-xs uppercase bg-gray-200 dark:bg-gray-700">
-                        <tr>
-                            <th class="px-4 py-2">Asset Name</th>
-                            <th class="px-4 py-2">Total Quantity</th>
-                            <th class="px-4 py-2">Available</th>
-                            <th class="px-4 py-2">Dispatched</th>
-                            <th class="px-4 py-2">Threshold</th>
+    <div class="bg-white dark:bg-gray-800 shadow rounded-md p-4 mb-6">
+        <h5 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Assets in Store by Type</h5>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-700 dark:text-gray-300">
+                <thead class="text-xs uppercase bg-gray-200 dark:bg-gray-700">
+                    <tr>
+                        <th class="px-4 py-2">Asset Name</th>
+                        <th class="px-4 py-2">Total Quantity</th>
+                        <th class="px-4 py-2">Available</th>
+                        <th class="px-4 py-2">Dispatched</th>
+                        <th class="px-4 py-2">Threshold</th>
+                        <th class="px-4 py-2">Dispatch</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($byType as $asset)
+                        <tr class="border-t border-gray-200 dark:border-gray-700">
+                            <td class="px-4 py-2">{{ $asset->name }}</td>
+                            <td class="px-4 py-2">{{ $asset->total_quantity }}</td>
+                            <td class="px-4 py-2">{{ $asset->total_available }}</td>
+                            <td class="px-4 py-2">{{ $asset->dispatched }}</td>
+                            <td class="px-4 py-2">{{ $asset->threshold }}</td>
+                            <td class="px-4 py-2">
+                                <form action="{{ route('assets.dispatch', $asset->id) }}" method="POST" class="flex items-center space-x-2">
+                                    @csrf
+                                    <input type="number" name="quantity" min="1" max="{{ $asset->total_available }}" class="w-16 px-1 border rounded text-sm" required>
+                                    <button type="submit" class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">Dispatch</button>
+                                </form>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($byType as $asset)
-                            <tr class="border-t border-gray-200 dark:border-gray-700">
-                                <td class="px-4 py-2">{{ $asset->name }}</td>
-                                <td class="px-4 py-2">{{ $asset->total_quantity }}</td>
-                                <td class="px-4 py-2">{{ $asset->total_available }}</td>
-                                <td class="px-4 py-2">{{ $asset->dispatched }}</td>
-                                <td class="px-4 py-2">{{ $asset->threshold }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-
-                </table>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    </div>
     @endif
+
 
     <!-- Pie Chart -->
     <div class="bg-white dark:bg-gray-800 shadow rounded-md p-4">

@@ -27,5 +27,6 @@ class DispatchNoteMail extends Mailable
     {
         return $this->subject('Dispatch Request Approved')
         ->view('emails.dispatch_note');
-    
+    }
+
 }
