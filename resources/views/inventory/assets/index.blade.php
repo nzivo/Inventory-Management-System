@@ -137,13 +137,12 @@
     });
 </script>
 <script>
-    function confirmDelete(url) {
+    // make absolutely sure it’s global
+    window.confirmDelete = function(url) {
         document.getElementById('deleteForm').action = url;
-        // $('#deleteModal').modal('show');
-
         var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
         deleteModal.show();
-    }
+    };
 </script>
 
 @endsection
