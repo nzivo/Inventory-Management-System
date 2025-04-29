@@ -33,8 +33,7 @@
                         </div>
                     </div>
 
-                    {{-- <table id="datatable" class="table table-condensed table-striped"> --}}
-                    <table id="itemsTable" class="table table-condensed table-striped">
+                    <table id="datatable" class="table table-condensed table-striped">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -79,14 +78,8 @@
                                         class="btn btn-primary btn-sm">Edit</a>
                                     @endif
                                     @if(auth()->user()->can('delete-asset'))
-                                    {{-- <button type="button" onclick="confirmDelete('{{ route('asset.destroyAsset', $item->id) }}')"
-                                        class="btn btn-danger btn-sm">Delete</button> --}}
-                                        <button
-                                            type="button"
-                                            data-url="{{ route('asset.destroyAsset', $item->id) }}"
-                                            class="btn btn-danger btn-sm">
-                                            Delete
-                                        </button>
+                                    <button onclick="confirmDelete('{{ route('asset.destroyAsset', $item->id) }}')"
+                                        class="btn btn-danger btn-sm">Delete</button>
                                     @endif
                                 </td>
                             </tr>
@@ -129,10 +122,8 @@
 <!-- Include DataTables script -->
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<!-- Bootstrap JS (for the modal) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-{{-- <script>
+<script>
     $(document).ready(function () {
         $('#itemsTable').DataTable({
             "paging": true,
@@ -143,37 +134,10 @@
     });
 </script>
 <script>
-    // make absolutely sure it’s global
-    window.confirmDelete = function(url) {
+    function confirmDelete(url) {
         document.getElementById('deleteForm').action = url;
-        var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        deleteModal.show();
-    };
-</script> --}}
-
-@push('scripts')
-<script>
-    // Wait for page to load
-    document.addEventListener('DOMContentLoaded', function() {
-
-        // Delegate click on any button with .btn-delete
-        document.querySelectorAll('.btn-delete').forEach(function(btn) {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-
-                // Grab the URL from our data attribute
-                var url = this.getAttribute('data-url');
-
-                // Point the form at it
-                document.getElementById('deleteForm').action = url;
-
-                // Show the Bootstrap modal
-                var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-                deleteModal.show();
-            });
-        });
-    });
+        $('#deleteModal').modal('show');
+    }
 </script>
-@endpush
 
 @endsection
