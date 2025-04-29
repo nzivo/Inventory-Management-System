@@ -79,8 +79,14 @@
                                         class="btn btn-primary btn-sm">Edit</a>
                                     @endif
                                     @if(auth()->user()->can('delete-asset'))
-                                    <button type="button" onclick="confirmDelete('{{ route('asset.destroyAsset', $item->id) }}')"
-                                        class="btn btn-danger btn-sm">Delete</button>
+                                    {{-- <button type="button" onclick="confirmDelete('{{ route('asset.destroyAsset', $item->id) }}')"
+                                        class="btn btn-danger btn-sm">Delete</button> --}}
+                                        <button
+                                            type="button"
+                                            data-url="{{ route('asset.destroyAsset', $item->id) }}"
+                                            class="btn btn-danger btn-sm">
+                                            Delete
+                                        </button>
                                     @endif
                                 </td>
                             </tr>
@@ -126,7 +132,7 @@
 <!-- Bootstrap JS (for the modal) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
+{{-- <script>
     $(document).ready(function () {
         $('#itemsTable').DataTable({
             "paging": true,
@@ -143,6 +149,31 @@
         var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
         deleteModal.show();
     };
+</script> --}}
+
+@push('scripts')
+<script>
+    // Wait for page to load
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // Delegate click on any button with .btn-delete
+        document.querySelectorAll('.btn-delete').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Grab the URL from our data attribute
+                var url = this.getAttribute('data-url');
+
+                // Point the form at it
+                document.getElementById('deleteForm').action = url;
+
+                // Show the Bootstrap modal
+                var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                deleteModal.show();
+            });
+        });
+    });
 </script>
+@endpush
 
 @endsection
