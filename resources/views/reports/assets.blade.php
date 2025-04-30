@@ -78,6 +78,8 @@
                                     @csrf
                                     <input type="number" name="quantity" min="1" max="{{ $asset->total_available }}" class="w-16 px-1 border rounded text-sm" required>
                                     <button type="submit" class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">Dispatch</button>
+
+                                    {{-- <a href="{{ route('dispatch_requests.create') }}" class="btn btn-primary mt-3">Dispatch</a> --}}
                                 </form>
                             </td>
                         </tr>

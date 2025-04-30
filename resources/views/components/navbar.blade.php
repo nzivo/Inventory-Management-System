@@ -19,14 +19,21 @@
                 </a>
             </li><!-- End Search Icon-->
 
-            @if(auth()->user()->can('view-notifications'))
+            {{-- @if(auth()->user()->can('view-notifications'))
             @include('components.navbar.notifications')
+            @endif --}}
+
+            @if(auth()->check() && auth()->user()->can('view-notifications'))
+                @include('components.navbar.notifications')
             @endif
 
-            @if(auth()->user()->can('view-messages'))
+            {{-- @if(auth()->user()->can('view-messages'))
             @include('components.navbar.messages')
-            @endif
+            @endif --}}
 
+            @if(auth()->check() && auth()->user()->can('view-messages'))
+                @include('components.navbar.messages')
+            @endif
 
             @include('components.navbar.user')
 

@@ -1,3 +1,4 @@
+@auth
 <!-- ======= Sidebar ======= -->
 <aside id="sidebar" class="sidebar">
 
@@ -176,3 +177,5 @@
     </ul>
 
 </aside><!-- End Sidebar-->
+
+@endauth
