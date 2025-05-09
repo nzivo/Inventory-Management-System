@@ -12,6 +12,7 @@ use App\Models\DispatchRequestSerialNumber;
 use App\Models\EmailSubscriber;
 use App\Models\Item;
 use App\Models\SerialNumberLog;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -32,7 +33,7 @@ class DispatchRequestController extends Controller
     public function store(Request $request)
     {
         // Validate the incoming request
-        $request->validate([
+        $data = $request->validate([
             'site' => 'required|string|max:255',
             'serial_numbers' => 'required|array|min:1',
             'serial_numbers.*' => 'exists:serial_numbers,id',
@@ -41,10 +42,17 @@ class DispatchRequestController extends Controller
 
         // Create the dispatch request
         $dispatchRequest = DispatchRequest::create([
+            // 'user_id' => Auth::id(),
+            // 'approver_id' => null,  // Will be set after approval
+            // 'site' => $request->site,
+            // 'description' => $request->description,
+            // 'status' => 'pending',
+            // 'dispatch_number' => DispatchRequest::generateDispatchNumber(), // Generate unique dispatch number
+
+            'site' => $data['site'],
+            'description' => $data['description'],
             'user_id' => Auth::id(),
             'approver_id' => null,  // Will be set after approval
-            'site' => $request->site,
-            'description' => $request->description,
             'status' => 'pending',
             'dispatch_number' => DispatchRequest::generateDispatchNumber(), // Generate unique dispatch number
         ]);
@@ -73,13 +81,28 @@ class DispatchRequestController extends Controller
             $dispatchRequest->serialNumbers()->create([
                 'serial_number_id' => $serialNumber->id // Store the serial_number's ID, not serial_number value
             ]);
+
+            // Attach Serial Numbers
+            $dispatchRequest->serialNumbers()->sync($data['serial_numbers']);
+
+            // Calculate how many were dispatched
+            $count = count($data['serial_numbers']);
+
+            // Find the Asset(Item) these serials belong to
+            // Assuming all serials belong to the same item:
+            $itemId = SerialNumber::whereIn('id', $data['serial_numbers'])->pluck('item_id')->unique()->first();
+
+            // Update the Item's stock counts
+            Item::where('id', $itemId)->decrement('total_available', $count)->increment('dispatched', $count);
+
         }
 
         // Send the email notification (for low stock or dispatch request)
         $this->sendDispatchNotification($dispatchRequest);
 
         // Return to the dispatch request index with a success message
-        return redirect()->route('dispatch_requests.index')->with('success', 'Dispatch request created successfully!');
+        return redirect()->route('dispatch_requests.index')->with('success', 'Dispatched {$count} units and Updated Stock!');
+
     }
 
     private function sendDispatchNotification(DispatchRequest $dispatchRequest)

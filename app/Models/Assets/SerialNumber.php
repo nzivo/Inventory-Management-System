@@ -5,6 +5,7 @@ namespace App\Models\Assets;
 use App\Models\Item;
 use App\Models\SerialNumberLog;
 use App\Models\User;
+use App\Models\DispatchRequest;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -37,7 +38,7 @@ class SerialNumber extends Model
     // A SerialNumber belongs to an Item
     public function item()
     {
-        return $this->belongsTo(Item::class);
+        return $this->belongsTo(Item::class, 'item_id');
     }
 
     // A SerialNumber is created by a user
@@ -62,5 +63,10 @@ class SerialNumber extends Model
     public function serialNumberLogs()
     {
         return $this->hasMany(SerialNumberLog::class);
+    }
+
+    public function dispatchRequests()
+    {
+        return $this->belongsToMany(DispatchRequest::class, 'dispatch_request_serial', 'serial_number_id', 'dispatch_request_id')->withTimestamps();
     }
 }

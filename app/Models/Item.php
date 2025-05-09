@@ -32,6 +32,11 @@ class Item extends Model
         'inventory_status'
     ];
 
+    protected $casts = [
+        'total_available' => 'integer',
+        'dispatched' => 'integer',
+    ];
+
     // Relationship with User (who added the item)
     public function creator()
     {
