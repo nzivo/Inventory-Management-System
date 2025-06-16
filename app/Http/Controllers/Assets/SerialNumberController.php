@@ -14,6 +14,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\DeviceAssignmentMail;
 
 class SerialNumberController extends Controller
 {
@@ -108,6 +109,9 @@ class SerialNumberController extends Controller
             }
         }
 
+        // Send email with delivery note and agreement
+        Mail::to($serialNumber->user->email)->send(new DeviceAssignmentMail($serialNumber));
+
         // Log the assignment activity
         SerialNumberLog::create([
             'serial_number_id' => $serialNumber->id,
@@ -125,7 +129,7 @@ class SerialNumberController extends Controller
     }
 
 
-    public function unassignSerialNumber(SerialNumber $serialNumber)
+    public function unassignSerialNumber(Request $request,SerialNumber $serialNumber)
     {
         // Check if the serial number has an assigned user
         if ($serialNumber->user) {

@@ -24,6 +24,7 @@
                 <div class="card-body mt-5">
 
                     <table style="width: 100%; border: none;">
+                        <th></th>
                         <tr style="width: 100%;">
                             <td style="width: 100%;">
                                 <h3 class="text-center"
@@ -37,6 +38,7 @@
                     </table>
                     <!-- Table Layout for Letterhead -->
                     <table style="width: 100%; border: none;">
+                        <th></th>
                         <tr>
                             <!-- Column 1: Company Details -->
                             <td
@@ -125,6 +127,7 @@
                     </table>
 
                     <table style="width: 100%; border: none;">
+                        <th></th>
                         <tr>
                             <td
                                 style="width: 33%; text-align: start; vertical-align: top; font-size: 14px; line-height: 1.5;">

@@ -48,8 +48,8 @@ class DispatchRequest extends Model
     // Relationship to SerialNumbers
     public function serialNumbers()
     {
-        // return $this->hasMany(DispatchRequestSerialNumber::class);
-
-        return $this->belongsToMany(SerialNumber::class, 'dispatch_request_serial', 'dispatch_request_id', 'serial_number_id');
+        return $this->belongsToMany(SerialNumber::class, 'dispatch_request_serial_numbers')
+            ->withPivot('item_id')
+            ->withTimestamps();
     }
 }

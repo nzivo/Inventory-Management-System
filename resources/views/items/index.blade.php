@@ -23,9 +23,10 @@
                             <h5 class="card-title">All Assets</h5>
                         </div>
                         <div class="col-md-2 text-end">
-                            @if(auth()->user()->can('create-assets'))
+                            {{-- @if(auth()->user()->can('create-assets')) --}}
                             <a href="{{ route('items.create') }}" class="btn btn-primary mt-3">Create New
-                                Asset</a>@endif
+                                Asset</a>
+                            {{-- @endif --}}
                         </div>
                     </div>
 

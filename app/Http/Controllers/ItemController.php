@@ -136,6 +136,8 @@ class ItemController extends Controller
 
         // Create the serial numbers and log the creation
         foreach ($request->serial_numbers as $serialNumber) {
+            Log::info('Creating serial', ['item_id' => $item->id, 'serial_number' => $serialNumber]);
+
             $serial = SerialNumber::create([
                 'item_id' => $item->id,
                 'serial_number' => $serialNumber,
