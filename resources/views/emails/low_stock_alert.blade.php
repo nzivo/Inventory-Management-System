@@ -6,7 +6,7 @@
     </head>
     <body>
         <h2>⚠️ Low Stock Alert</h2>
-        <p>The following items have stock less than 5:</p>
+        <p>The following items are grouped by category and their current stock levels:</p>
 
         @php
             // Group items by category_name or category->name
@@ -24,18 +24,38 @@
                 </thead>
                 <tbody>
                     @foreach ($items as $item)
-                        <tr style="background-color: {{ $item->stock < 3 ? '#f8d7da' : '#fff3cd' }};">
+                        @php
+                            $stock = $item->stock;
+
+                            if ($stock <= 5) {
+                                $label = 'Critical';
+                                $bgColor = '#dc3545'; // red
+                                $rowColor = '#f8d7da';
+                                $textColor = 'white';
+                            } elseif ($stock <= 15) {
+                                $label = 'Warning';
+                                $bgColor = '#fd7e14'; // orange
+                                $rowColor = '#fff3cd';
+                                $textColor = '#212529';
+                            } elseif ($stock <= 20) {
+                                $label = 'Low';
+                                $bgColor = '#ffc107'; // yellow
+                                $rowColor = '#fffbea';
+                                $textColor = '#212529';
+                            } else {
+                                $label = 'In Stock';
+                                $bgColor = '#28a745'; // green
+                                $rowColor = '#e6ffed';
+                                $textColor = 'white';
+                            }
+                        @endphp
+                        <tr style="background-color: {{ $rowColor }};">
                             <td>{{ $item->name }}</td>
-                            {{-- <td style="text-align: center;"><strong>{{ $item->stock }}</strong></td> --}}
                             <td style="text-align: center;">
-                                <strong>{{ $item->stock }}</strong>
-                                @if ($item->stock < 2)
-                                    <span style="background-color:#dc3545; color:white; padding:3px 6px; border-radius:4px; font-size: 12px;">Critical</span>
-                                @elseif ($item->stock < 4)
-                                    <span style="background-color:#ffc107; color:#212529; padding:3px 6px; border-radius:4px; font-size: 12px;">Warning</span>
-                                @else
-                                    <span style="background-color:#28a745; color:white; padding:3px 6px; border-radius:4px; font-size: 12px;">Low</span>
-                                @endif
+                                <strong>{{ $stock }}</strong>
+                                <span style="background-color: {{ $bgColor }}; color: {{ $textColor }}; padding: 3px 6px; border-radius: 4px; font-size: 12px;">
+                                    {{ $label }}
+                                </span>
                             </td>
                         </tr>
                     @endforeach
@@ -45,6 +65,7 @@
         @endforeach
     </body>
 </html>
+
 
 
 

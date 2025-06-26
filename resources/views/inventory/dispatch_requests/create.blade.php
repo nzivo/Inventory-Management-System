@@ -63,6 +63,17 @@
                             </div>
                         </div>
 
+                        <div class="row mb-3">
+                            <label for="type" class="col-sm-2 col-form-label">Type of Deployment</label>
+                            <div class="col-sm-10">
+                                <select id="type" name="type" class="form-control">
+                                    <option value="" disabled selected>-- Select Deployment Type --</option>
+                                    <option value="New Deployment">New Deployment</option>
+                                    <option value="Maintenance">Maintenance</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <!-- Serial Numbers Selection -->
                         <h3>Select Serial Numbers</h3>
                         <div class="row mb-3">

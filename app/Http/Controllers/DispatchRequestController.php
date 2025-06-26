@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\LowStockAlert;
+use Illuminate\Support\Facades\DB;
 
 class DispatchRequestController extends Controller
 {
@@ -38,6 +39,7 @@ class DispatchRequestController extends Controller
             'serial_numbers' => 'required|array|min:1',
             'serial_numbers.*' => 'exists:serial_numbers,id',
             'description' => 'nullable|string|max:255',
+            'type' => 'required|string|max:255',
         ]);
 
         // Create the dispatch request
@@ -48,6 +50,7 @@ class DispatchRequestController extends Controller
             'description' => $request->description,
             'status' => 'pending',
             'dispatch_number' => DispatchRequest::generateDispatchNumber(), // Generate unique dispatch number
+            'deployment_type' => $request->type,
         ]);
 
         // Attach selected serial numbers to the dispatch request
@@ -77,18 +80,28 @@ class DispatchRequestController extends Controller
         }
 
         // Send the email notification (for low stock or dispatch request)
-        $lowStockItems = Item::with([
-            'category',
-            'serialNumbers' => function ($query) {
-                $query->where('status', 'available');
-            }
-        ])
-        ->withCount([
-            'serialNumbers as stock' => function ($query) {
-                $query->where('status', 'available');
-            }
-        ])
-        ->having('stock', '<', 5)
+        // $lowStockItems = Item::with([
+        //     'category',
+        //     'serialNumbers' => function ($query) {
+        //         $query->where('status', 'available');
+        //     }
+        // ])
+        // ->withCount([
+        //     'serialNumbers as stock' => function ($query) {
+        //         $query->where('status', 'available');
+        //     }
+        // ])
+        // ->having('stock', '<', 5)
+        // ->get();
+
+        $lowStockItems = DB::table('items')
+            ->select('name', DB::raw('COUNT(serial_numbers.id) as stock'))
+            ->leftJoin('serial_numbers', function ($join) {
+                $join->on('items.id', '=', 'serial_numbers.item_id')
+                ->where('serial_numbers.status', 'available');
+            })
+        ->groupBy('name')
+        ->orderBy('stock', 'asc') // optional
         ->get();
 
         if ($lowStockItems->isNotEmpty()) {
@@ -119,16 +132,40 @@ class DispatchRequestController extends Controller
         if (auth()->user()->hasRole('user')) {
             // If user has 'user' role, return only their dispatch requests
             $dispatchRequests = DispatchRequest::with('user') // Eager load the 'user' relationship
-                ->where('user_id', auth()->id()) // Filter by the currently authenticated user's ID
+                ->where([['user_id', auth()->id()],['deployment_type', 'New Deployment']]) // Filter by the currently authenticated user's ID and Deployment Type
                 ->orderBy('created_at', 'desc') // Optional: order by creation date
                 ->paginate(10); // Paginate with 10 items per page
 
             return view('inventory.dispatch_requests.user_index', compact('dispatchRequests')); // Adjusted view for users with 'user' role
         } else {
-            // Fetch all dispatch requests for admins or other roles
-            $dispatchRequests = DispatchRequest::with('user') // Eager load the 'user' relationship
-                ->orderBy('created_at', 'desc') // Optional: order by creation date
-                ->paginate(10); // Paginate with 10 items per page
+            // Fetch only 'New Deployment' dispatch requests for admins or other roles
+            $dispatchRequests = DispatchRequest::with('user')
+                ->where('deployment_type', 'New Deployment') // <-- Apply filter here
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+
+            return view('inventory.dispatch_requests.index', compact('dispatchRequests'));
+        }
+
+    }
+
+    public function maintenance()
+    {
+        if (auth()->user()->hasRole('user')) {
+            $dispatchRequests = DispatchRequest::with('user')
+                ->where([
+                    ['user_id', auth()->id()],
+                    ['deployment_type', 'Maintenance']
+                ])
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+
+            return view('inventory.dispatch_requests.user_index', compact('dispatchRequests'));
+        } else {
+            $dispatchRequests = DispatchRequest::with('user')
+                ->where('deployment_type', 'Maintenance') // <-- Add this line
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
 
             return view('inventory.dispatch_requests.index', compact('dispatchRequests'));
         }
@@ -138,7 +175,7 @@ class DispatchRequestController extends Controller
     public function show($id)
     {
         // Eager load serialNumbers and their associated item
-        $dispatchRequest = DispatchRequest::with(['user', 'serialNumbers.serialNumber.item'])->findOrFail($id);
+        $dispatchRequest = DispatchRequest::with(['user', 'serialNumbers.item'])->findOrFail($id);
 
         return view('inventory.dispatch_requests.show', compact('dispatchRequest'));
     }
@@ -246,4 +283,26 @@ class DispatchRequestController extends Controller
 
         return redirect()->back()->with('success', 'Dispatch request deleted successfully.');
     }
+
+    // Edit a Dispatch Request
+    public function edit($id)
+    {
+        // Load dispatch request with related serial numbers and items
+        $dispatchRequest = DispatchRequest::with(['user', 'serialNumbers.item'])->findOrFail($id);
+
+        // You may also want to pass other needed data (e.g., available serial numbers or users)
+        return view('inventory.dispatch_requests.edit', compact('dispatchRequest'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $dispatch = DispatchRequest::findOrFail($id);
+
+        $dispatch->status = $request->input('status');
+        $dispatch->save();
+
+        return redirect()->route('dispatch-requests.index')->with('success', 'Dispatch updated successfully.');
+    }
+
+
 }

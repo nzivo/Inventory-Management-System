@@ -18,7 +18,8 @@ class DispatchRequest extends Model
         'dispatch_number',
         'description',
         'status',
-        'site'
+        'site',
+        'deployment_type'
     ];
 
     // Relationship with User (Employee)

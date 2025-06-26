@@ -71,12 +71,12 @@
             </a>
             <ul id="maintenance-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li>
-                    <a href="{{route('dispatch_requests.index')}}">
+                    <a href="{{route('dispatch-requests.maintenance')}}">
                         <i class="bi bi-circle"></i><span>View Requests</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{route('dispatch_requests.index')}}">
+                    <a href="{{route('dispatch-requests.maintenance')}}">
                         <i class="bi bi-circle"></i><span>Record Returns</span>
                     </a>
                 </li>

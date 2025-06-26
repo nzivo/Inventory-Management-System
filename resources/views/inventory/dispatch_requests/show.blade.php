@@ -85,9 +85,9 @@
                     <ul>
                         @foreach($dispatchRequest->serialNumbers as $serial)
                         <li>
-                            {{ $serial->serialNumber->serial_number }} -
-                            @if($serial->serialNumber->item)
-                            ({{ $serial->serialNumber->item->name }})
+                            {{ $serial->serial_number }} -
+                            @if($serial->item)
+                            ({{ $serial->item->name }})
                             @else
                             (No item associated)
                             @endif

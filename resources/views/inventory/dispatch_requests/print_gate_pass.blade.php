@@ -113,10 +113,10 @@
                             @foreach($dispatchRequest->serialNumbers as $index => $serial)
                             <tr>
                                 <td>{{ $index + 1 }}</td> <!-- Displaying the index as a number (starting from 1) -->
-                                <td>{{ $serial->serialNumber->serial_number }}</td>
+                                <td>{{ $serial->serial_number }}</td>
                                 <td>
-                                    @if($serial->serialNumber->item)
-                                    {{ $serial->serialNumber->item->name }}
+                                    @if($serial->item)
+                                    {{ $serial->item->name }}
                                     @else
                                     No item associated
                                     @endif

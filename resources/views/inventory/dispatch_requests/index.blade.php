@@ -37,6 +37,7 @@
                                 <th>User</th>
                                 <th>Site</th>
                                 <th>Status</th>
+                                <th>Deployment Type</th>
                                 <th>Approved By</th>
                                 <th>Created At</th>
                                 <th>Actions</th>
@@ -55,6 +56,7 @@
                                         {{ ucfirst($dispatchRequest->status) }}
                                     </span>
                                 </td>
+                                <td>{{ $dispatchRequest->deployment_type }}</td>
                                 <td>{{ $dispatchRequest->approver?->name }}</td>
                                 <td>{{ $dispatchRequest->created_at->format('Y-m-d H:i') }}</td>
                                 <td>

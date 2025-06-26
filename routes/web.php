@@ -41,7 +41,9 @@ Route::middleware(['useradmin'])->group(
         Route::post('dispatch_requests/{id}/update-status', [DispatchRequestController::class, 'updateStatus'])->name('dispatch_requests.updateStatus');
         Route::post('items/{item}/update-status', [ItemController::class, 'updateStatus'])->name('items.updateStatus');
         Route::get('dispatch_requests/{id}/print-gate-pass', [DispatchRequestController::class, 'printGatePass'])->name('dispatch_requests.printGatePass');
-
+        Route::put('/dispatch-requests/{id}', [DispatchRequestController::class, 'update'])->name('dispatch-requests.update');
+        Route::get('/dispatch-requests', [DispatchRequestController::class, 'index'])->name('dispatch-requests.index');
+        Route::get('/dispatch-requests/maintenace', [DispatchRequestController::class, 'maintenance'])->name('dispatch-requests.maintenance');
 
 
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -84,3 +86,5 @@ Route::middleware(['useradmin'])->group(
 
     }
 );
+
+
