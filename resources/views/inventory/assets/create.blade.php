@@ -54,6 +54,16 @@
                             </div>
                         </div>
 
+                        <div class="row mb-3">
+                            <label for="auto_generate" class="col-sm-2 col-form-label">Auto Generate Serials?</label>
+                            <div class="col-sm-10">
+                                <select id="auto_generate" class="form-control">
+                                    <option value="no">No (Enter manually)</option>
+                                    <option value="yes">Yes (Generate automatically)</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="row mb-3" id="serialNumbersContainer">
                             <label for="serial_number_1" class="col-sm-2 col-form-label">Serial Number #1:</label>
                             <div class="serialNumberField col-sm-10">
@@ -77,43 +87,39 @@
 </section>
 
 @endsection
-
 <script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const quantityInput = document.getElementById('quantity');
+        const autoGenerateSelect = document.getElementById('auto_generate');
         const serialNumbersContainer = document.getElementById('serialNumbersContainer');
 
         function updateSerialNumberFields() {
-            const quantity = parseInt(quantityInput.value);
-            const currentFields = serialNumbersContainer.querySelectorAll('.serialNumberField');
+            const quantity = parseInt(quantityInput.value) || 1;
+            const autoGenerate = autoGenerateSelect.value === 'yes';
 
-            // Remove excess fields
-            if (currentFields.length > quantity) {
-                for (let i = currentFields.length - 1; i >= quantity; i--) {
-                    currentFields[i].remove();
-                }
-            }
+            serialNumbersContainer.innerHTML = ''; // Clear all current fields
 
-            // Add missing fields
-            for (let i = currentFields.length; i < quantity; i++) {
-                const serialNumberField = document.createElement('div');
-                serialNumberField.classList.add('serialNumberField');
-                serialNumberField.innerHTML = `
-                    <div class="row mb-3">
+            for (let i = 0; i < quantity; i++) {
+                const serialValue = autoGenerate ? `ASSET-${Date.now()}-${Math.floor(Math.random() * 1000)}-${i + 1}` : '';
+
+                const fieldHTML = `
+                    <div class="row mb-3 serialNumberField">
                         <label for="serial_number_${i + 1}" class="col-sm-2 col-form-label">Serial Number #${i + 1}:</label>
                         <div class="col-sm-10">
-                            <input type="text" name="serial_numbers[]" id="serial_number_${i + 1}" class="form-control" required>
+                            <input type="text" name="serial_numbers[]" id="serial_number_${i + 1}" class="form-control"
+                                ${autoGenerate ? 'readonly' : 'required'}
+                                value="${serialValue}">
                         </div>
                     </div>
                 `;
-                serialNumbersContainer.appendChild(serialNumberField);
+
+                serialNumbersContainer.insertAdjacentHTML('beforeend', fieldHTML);
             }
         }
 
-        // Initial population of serial number fields
-        updateSerialNumberFields();
-
-        // Add event listener to quantity input
         quantityInput.addEventListener('input', updateSerialNumberFields);
+        autoGenerateSelect.addEventListener('change', updateSerialNumberFields);
+
+        updateSerialNumberFields(); // Initial call
     });
 </script>
