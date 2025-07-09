@@ -261,9 +261,10 @@ class ItemController extends Controller
     {
         $item = Item::findOrFail($id);
         $categories = Category::all();
+        $subcategories = Subcategory::all();
         $branches = Branch::all();
 
-        return view('inventory.assets.edit', compact('item', 'categories', 'branches'));
+        return view('inventory.assets.edit', compact('item', 'categories', 'branches', 'subcategories'));
     }
 
     // Update an asset
@@ -276,6 +277,7 @@ class ItemController extends Controller
             'description' => 'nullable|string',
             'quantity' => 'required|integer|min:1',
             'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'required|exists:subcategories,id',
             'branch_id' => 'required|exists:branches,id',
             'status' => 'required|in:active,inactive',
             'inventory_status' => 'required|in:in_stock,out_of_stock',
@@ -290,6 +292,7 @@ class ItemController extends Controller
             'description' => $request->description,
             'quantity' => $request->quantity,
             'category_id' => $request->category_id,
+            'subcategory_id' => $request->subcategory_id,
             'branch_id' => $request->branch_id,
             'status' => $request->status,
             'inventory_status' => $request->inventory_status,

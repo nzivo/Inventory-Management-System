@@ -45,6 +45,16 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="subcategory_id" class="form-label">Subcategory</label>
+                    <select name="subcategory_id" id="subcategory_id" class="form-control">
+                        <option value="">Select Subcategory</option>
+                        @foreach ($subcategories as $subcategory)
+                        <option value="{{ $subcategory->id }}" {{ $subcategory->id == $item->subcategory_id ? 'selected' : '' }}>{{ $subcategory->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
                     <label for="branch_id" class="form-label">Branch</label>
                     <select class="form-control" name="branch_id" required>
                         @foreach($branches as $branch)
@@ -70,3 +80,31 @@
     </div>
 </div>
 @endsection
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const categorySelect = document.getElementById("category_id");
+        const subcategorySelect = document.getElementById("subcategory_id");
+
+        categorySelect.addEventListener("change", function () {
+            const categoryId = this.value;
+
+            if (categoryId) {
+                fetch(`/get-subcategories/${categoryId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+                        data.forEach(subcategory => {
+                            const option = document.createElement("option");
+                            option.value = subcategory.id;
+                            option.text = subcategory.name;
+                            subcategorySelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            } else {
+                subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+            }
+        });
+    });
+</script>
+

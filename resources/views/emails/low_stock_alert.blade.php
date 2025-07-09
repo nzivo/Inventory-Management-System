@@ -11,6 +11,7 @@
         @php
             // Group items by category_name or category->name
             $grouped = $lowStockItems->groupBy('category.name'); // adjust if you're using category_name directly
+
         @endphp
 
         @foreach ($grouped as $categoryName => $items)

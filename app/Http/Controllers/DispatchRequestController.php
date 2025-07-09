@@ -80,29 +80,15 @@ class DispatchRequestController extends Controller
         }
 
         // Send the email notification (for low stock or dispatch request)
-        // $lowStockItems = Item::with([
-        //     'category',
-        //     'serialNumbers' => function ($query) {
-        //         $query->where('status', 'available');
-        //     }
-        // ])
-        // ->withCount([
-        //     'serialNumbers as stock' => function ($query) {
-        //         $query->where('status', 'available');
-        //     }
-        // ])
-        // ->having('stock', '<', 5)
-        // ->get();
-
         $lowStockItems = DB::table('items')
-            ->select('name', DB::raw('COUNT(serial_numbers.id) as stock'))
-            ->leftJoin('serial_numbers', function ($join) {
-                $join->on('items.id', '=', 'serial_numbers.item_id')
-                ->where('serial_numbers.status', 'available');
-            })
-        ->groupBy('name')
-        ->orderBy('stock', 'asc') // optional
+        ->join('serial_numbers', 'items.id', '=', 'serial_numbers.item_id')
+        ->join('categories', 'items.category_id', '=', 'categories.id') // Join categories
+        ->select('items.name', 'categories.name as category_name', DB::raw('COUNT(serial_numbers.id) as stock'))
+        ->where('serial_numbers.status', 'available')
+        ->groupBy('items.name', 'categories.name')
+        ->orderBy('stock', 'asc')
         ->get();
+
 
         if ($lowStockItems->isNotEmpty()) {
             Mail::to('mchama@fon.co.ke')
