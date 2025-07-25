@@ -80,15 +80,40 @@ class DispatchRequestController extends Controller
         }
 
         // Send the email notification (for low stock or dispatch request)
+        // $lowStockItems = DB::table('items')
+        // ->join('serial_numbers', 'items.id', '=', 'serial_numbers.item_id')
+        // ->join('categories', 'items.category_id', '=', 'categories.id')
+        // ->leftJoin('brands', 'items.brand_id', '=', 'brands.id')
+        // ->leftJoin('subcategories', 'items.subcategory_id', '=', 'subcategories.id')
+        // ->select(
+        //     'items.name',
+        //     'categories.name as category_name',
+        //     DB::raw('COALESCE(brands.name, subcategories.name, "Unbranded") as group_name'),
+        //     DB::raw('COUNT(serial_numbers.id) as stock')
+        // )
+        // ->where('serial_numbers.status', 'available')
+        // ->groupBy('items.name', 'categories.name', 'group_name')
+        // ->orderBy('categories.name')
+        // ->orderBy('group_name')
+        // ->orderBy('stock', 'asc')
+        // ->get();
+
         $lowStockItems = DB::table('items')
-        ->join('serial_numbers', 'items.id', '=', 'serial_numbers.item_id')
-        ->join('categories', 'items.category_id', '=', 'categories.id') // Join categories
-        ->select('items.name', 'categories.name as category_name', DB::raw('COUNT(serial_numbers.id) as stock'))
-        ->where('serial_numbers.status', 'available')
-        ->groupBy('items.name', 'categories.name')
+        ->leftJoin('serial_numbers', 'items.id', '=', 'serial_numbers.item_id')
+        ->join('categories', 'items.category_id', '=', 'categories.id')
+        ->leftJoin('brands', 'items.brand_id', '=', 'brands.id')
+        ->leftJoin('subcategories', 'items.subcategory_id', '=', 'subcategories.id')
+        ->select(
+            'items.name',
+            'categories.name as category_name',
+            DB::raw('COALESCE(brands.name, subcategories.name, "Unbranded") as group_name'),
+            DB::raw("COUNT(CASE WHEN serial_numbers.status = 'available' THEN 1 END) as stock")
+        )
+        ->groupBy('items.name', 'categories.name', 'group_name')
+        ->orderBy('categories.name')
+        ->orderBy('group_name')
         ->orderBy('stock', 'asc')
         ->get();
-
 
         if ($lowStockItems->isNotEmpty()) {
             Mail::to('mchama@fon.co.ke')

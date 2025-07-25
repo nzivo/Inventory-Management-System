@@ -15,6 +15,7 @@ use App\Http\Controllers\User\PermissionController;
 use App\Http\Controllers\User\RoleController;
 use App\Http\Controllers\User\UserController;
 use App\Models\Admin\SubCategory;
+use App\Models\ItemLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,13 @@ Route::middleware(['useradmin'])->group(
 
         Route::get('assets/{item}/add-serial-numbers', [SerialNumberController::class, 'create'])->name('serialnumbers.create');
         Route::post('assets/{item}/store-serial-numbers', [SerialNumberController::class, 'store'])->name('serialnumbers.store');
+        // Show the basic form without serials
+        Route::get('/item/create-basic', [ItemController::class, 'createBasic'])->name('item.create.basic');
+        Route::post('/item/store-basic', [ItemController::class, 'storeBasic'])->name('item.store.basic');
+
+        Route::get('/item/add-serials', [ItemController::class, 'editSerials'])->name('item.editSerials');
+        Route::post('/item/update-serials', [ItemController::class, 'updateSerials'])->name('item.updateSerials');
+
 
 
         Route::resource('dispatch_requests', DispatchRequestController::class);

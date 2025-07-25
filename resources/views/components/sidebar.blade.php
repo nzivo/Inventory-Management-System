@@ -38,11 +38,26 @@
                         <i class="bi bi-circle"></i><span>Employee Devices</span>
                     </a>
                 </li>
-                <li>
+                {{-- <li>
                     <a href="{{ route('reports.assets') }}">
                         <i class="bi bi-circle"></i><span>Assets Store Count</span>
                     </a>
+                </li> --}}
+
+                <li class="{{ request()->routeIs('item.create.basic') ? 'active' : '' }}">
+                    <a href="{{ route('item.create.basic') }}">
+                        <i class="bi bi-plus-circle"></i>
+                        <span>Add Item Without Serial Number</span>
+                    </a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('item.editSerials') }}">
+                        <i class="bi bi-pencil-square"></i>
+                        <span>Add Serial Numbers</span>
+                    </a>
+                </li>
+
 
             </ul>
         </li><!-- End Components Nav -->

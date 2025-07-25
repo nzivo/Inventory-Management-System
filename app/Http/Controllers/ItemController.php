@@ -14,7 +14,9 @@ use App\Models\SerialNumberLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Intervention\Image\Facades\Image;
+use Illuminate\Support\Str;
+use Intervention\Image\ImageManagerStatic as Image;
+use Illuminate\Support\Facades\Storage;
 
 class ItemController extends Controller
 {
@@ -69,7 +71,7 @@ class ItemController extends Controller
         // Validate the input
         $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string ',
+            'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => 'nullable|exists:subcategories,id',
             'brand_id' => 'nullable|exists:brands,id',
@@ -78,6 +80,8 @@ class ItemController extends Controller
             'quantity' => 'required|integer|min:1',
             'serial_numbers' => 'required|array|min:1',
             'serial_numbers.*' => 'required|string|unique:serial_numbers,serial_number',
+            // 'serial_numbers' => 'nullable|array',
+            // 'serial_numbers.*' => 'nullable|string|distinct|unique:serial_numbers,serial_number',
             'item_img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -322,4 +326,160 @@ class ItemController extends Controller
 
         return redirect()->route('asset.assets')->with('success', 'Asset deleted successfully');
     }
+
+    public function storeBasic(Request $request)
+    {
+        Log::info('Received storeBasic request.', $request->all());
+
+        // 1. Validate
+        try {
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'category_id' => 'required|exists:categories,id',
+                'subcategory_id' => 'nullable|exists:subcategories,id',
+                'brand_id' => 'nullable|exists:brands,id',
+                'supplier_id' => 'nullable|exists:suppliers,id',
+                'branch_id' => 'required|exists:branches,id',
+                'quantity' => 'required|integer|min:1',
+                'item_img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
+
+            Log::info('Validation passed.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed.', $e->errors());
+        return back()->withErrors($e->errors())->withInput();
+    }
+
+
+
+        $userId = Auth::id();
+        Log::info('User ID fetched', ['user_id' => $userId]);
+
+        $imageUrl = null;
+        $thumbnailUrl = null;
+
+        // 2. Handle image upload
+        if ($request->hasFile('item_img')) {
+            try {
+                Log::info('Image upload started');
+                $image = $request->file('item_img');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+                $imagePath = public_path('assets/item_images');
+                $thumbPath = $imagePath . '/thumbnails';
+
+                // Ensure directories exist
+                if (!file_exists($imagePath)) mkdir($imagePath, 0777, true);
+                if (!file_exists($thumbPath)) mkdir($thumbPath, 0777, true);
+
+                // Move main image
+                $image->move($imagePath, $imageName);
+                $imageUrl = asset("assets/item_images/{$imageName}");
+                Log::info("Main image saved at: $imageUrl");
+
+                // Generate thumbnail
+                $img = Image::make($imagePath . '/' . $imageName);
+                $img->resize(150, 150)->save("{$thumbPath}/{$imageName}");
+                $thumbnailUrl = asset("assets/item_images/thumbnails/{$imageName}");
+                Log::info("Thumbnail saved at: $thumbnailUrl");
+
+            } catch (\Exception $e) {
+                Log::error('Image upload or thumbnail failed: ' . $e->getMessage());
+                return back()->with('error', 'Image upload or thumbnail failed.')->withInput();
+            }
+        }
+
+        // 3. Create item
+        try {
+            $item = Item::create([
+                'name' => $validatedData['name'],
+                'description' => $validatedData['description'] ?? null,
+                'category_id' => $validatedData['category_id'],
+                'subcategory_id' => $validatedData['subcategory_id'] ?? null,
+                'brand_id' => $validatedData['brand_id'] ?? null,
+                'supplier_id' => $validatedData['supplier_id'] ?? null,
+                'branch_id' => $validatedData['branch_id'],
+                'created_by' => $userId,
+                'item_img' => $imageUrl,
+                'thumbnail_img' => $thumbnailUrl,
+                'quantity' => $validatedData['quantity'],
+                'threshold' => 1,
+                'available_quantity' => $validatedData['quantity'],
+            ]);
+
+            Log::info("Item created successfully with ID: {$item->id}");
+        } catch (\Exception $e) {
+            Log::error('Failed to create item: ' . $e->getMessage());
+            return back()->with('error', 'Failed to create item.')->withInput();
+        }
+
+        // 4. Log user activity
+        try {
+            Activity::create([
+                'user_id' => $userId,
+                'activity' => "Created item: {$validatedData['name']} without serial numbers",
+                'status' => "completed",
+            ]);
+            Log::info("Activity logged for item creation.");
+        } catch (\Exception $e) {
+            Log::warning("Activity logging failed: " . $e->getMessage());
+        }
+
+        return redirect()->route('items.index')->with('success', 'Item created successfully without serial numbers.');
+    }
+
+    public function createBasic()
+    {
+
+        $categories = Category::all();
+        $subcategories = Subcategory::all();
+        $brands = Brand::all();
+        $suppliers = Supplier::all();
+        $branches = Branch::all();
+
+        return view('items.create_basic', compact('categories', 'subcategories', 'brands', 'suppliers', 'branches'));
+    }
+
+    public function editSerials()
+    {
+        Log::info('Fetching items without serial numbers');
+        $items = Item::doesntHave('serialNumbers')->get();
+        return view('items.add_serials', compact('items'));
+    }
+
+    public function updateSerials(Request $request)
+    {
+        foreach ($request->input('serials', []) as $itemId => $serial) {
+            $serial = trim($serial);
+            $shouldGenerate = $request->has("generate.$itemId");
+
+            // Check if serial already exists for this item
+            $existing = SerialNumber::where('item_id', $itemId)->first();
+
+            if ($existing) {
+                $existing->serial_number = $serial ?: ($shouldGenerate ? $this->generateSerial($itemId) : $existing->serial_number);
+                $existing->save();
+            } else {
+                $newSerial = $serial ?: ($shouldGenerate ? $this->generateSerial($itemId) : null);
+                if ($newSerial) {
+                    SerialNumber::create([
+                        'item_id' => $itemId,
+                        'serial_number' => $newSerial,
+                        'created_by' => Auth::id(),
+                    ]);
+                }
+            }
+        }
+
+        return back()->with('success', 'Serial numbers updated successfully.');
+    }
+
+    private function generateSerial($itemId)
+    {
+        $prefix = 'SN' . str_pad($itemId, 4, '0', STR_PAD_LEFT);
+        $random = strtoupper(Str::random(5)); // Ensure `use Illuminate\Support\Str;`
+        return $prefix . '-' . $random;
+    }
+
 }
