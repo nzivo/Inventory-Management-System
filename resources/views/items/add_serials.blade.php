@@ -8,38 +8,6 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    {{-- <form action="{{ route('item.updateSerials') }}" method="POST">
-        @csrf
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Item Name</th>
-                    <th>Description</th>
-                    <th>Current Serial</th>
-                    <th>New Serial Number</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($items as $item)
-                    <tr>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->serial_number ?? 'N/A' }}</td>
-                        <td>
-                            <input type="text" name="serials[{{ $item->id }}]" class="form-control">
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="4" class="text-center">All items have serial numbers</td></tr>
-                @endforelse
-            </tbody>
-        </table>
-
-        @if($items->count())
-            <button type="submit" class="btn btn-primary">Update Serials</button>
-        @endif
-    </form> --}}
-
     <form action="{{ route('item.updateSerials') }}" method="POST">
         @csrf
         <table class="table">
